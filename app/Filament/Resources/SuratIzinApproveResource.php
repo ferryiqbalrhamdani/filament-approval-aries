@@ -294,7 +294,7 @@ class SuratIzinApproveResource extends Resource
     {
         return $table
             ->deferLoading()
-            //         ->poll('5s')
+            ->poll('5s')
             ->columns([
                 Tables\Columns\TextColumn::make('suratIzin.user.full_name')
                     ->label('Nama User')

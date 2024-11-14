@@ -103,6 +103,13 @@ class CreateSuratIzin extends CreateRecord
             $suratIzin->suratIzinApproveDua()->create([
                 'surat_izin_id' => $suratIzin->id,
             ]);
+
+            if (Auth::user()->user_mengetahui_id != null) {
+                $suratIzin->mengetahui()->create([
+                    'user_mengetahui_id' => Auth::user()->user_mengetahui_id,
+                    'surat_izin_id' => $suratIzin->id,
+                ]);
+            }
         }
     }
 

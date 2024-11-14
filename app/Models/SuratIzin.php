@@ -57,4 +57,9 @@ class SuratIzin extends Model
     {
         return $this->hasOne(SuratIzinApproveDua::class);
     }
+
+    public function mengetahui()
+    {
+        return $this->hasOne(MengetahuiSuratIzin::class);
+    }
 }
