@@ -63,19 +63,26 @@ class CreateIzinLembur extends CreateRecord
         if ($izinLembur->is_draft == false) {
             if (Auth::user()->user_approve_id != null) {
                 $izinLembur->izinLemburApprove()->create([
-                    'surat_izin_id' => $izinLembur->id,
+                    'izin_lembur_id' => $izinLembur->id,
                     'user_id' => Auth::user()->user_approve_id,
                 ]);
             } else {
                 $izinLembur->izinLemburApprove()->create([
-                    'surat_izin_id' => $izinLembur->id,
+                    'izin_lembur_id' => $izinLembur->id,
                     'status' => 1,
                 ]);
             }
 
             $izinLembur->izinLemburApproveDua()->create([
-                'surat_izin_id' => $izinLembur->id,
+                'izin_lembur_id' => $izinLembur->id,
             ]);
+
+            if (Auth::user()->user_mengetahui_id != null) {
+                $izinLembur->mengetahui()->create([
+                    'user_mengetahui_id' => Auth::user()->user_mengetahui_id,
+                    'izin_lembur_id' => $izinLembur->id,
+                ]);
+            }
         }
     }
 

@@ -47,4 +47,9 @@ class IzinLembur extends Model
     {
         return $this->hasOne(IzinLemburApproveDua::class);
     }
+
+    public function mengetahui()
+    {
+        return $this->hasOne(MengetahuiIzinLembur::class);
+    }
 }
