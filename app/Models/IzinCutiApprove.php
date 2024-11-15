@@ -46,4 +46,9 @@ class IzinCutiApprove extends Model
     {
         return $this->hasOne(IzinCutiApproveDua::class); // or `hasMany`, depending on your structure
     }
+
+    public function mengetahui()
+    {
+        return $this->hasOne(MengetahuiIzinCuti::class);
+    }
 }

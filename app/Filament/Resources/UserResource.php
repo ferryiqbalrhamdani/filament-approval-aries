@@ -57,8 +57,11 @@ class UserResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('username')
                             ->required()
+                            ->rules([
+                                'regex:/^[a-z0-9_]+$/', // Hanya huruf kecil, angka, dan garis bawah
+                            ])
                             ->inlineLabel()
-                            ->helperText('Username akan otomatis dibuat')
+                            ->helperText('Username akan otomatis dibuat. Username hanya boleh berisi huruf kecil, angka, dan garis bawah, tanpa spasi atau huruf besar.')
                             ->unique(User::class, 'username', ignoreRecord: true)
                             ->maxLength(255),
                         Forms\Components\TextInput::make('password')

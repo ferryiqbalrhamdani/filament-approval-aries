@@ -113,6 +113,13 @@ class CreateCutiKhusus extends CreateRecord
             $izinCuti->izinCutiApproveDua()->create([
                 'surat_izin_id' => $cutiKhusus->id,
             ]);
+
+            if (Auth::user()->user_mengetahui_id != null) {
+                $izinCuti->mengetahui()->create([
+                    'user_mengetahui_id' => Auth::user()->user_mengetahui_id,
+                    'izin_cuti_approve_id' => $izinCuti->id,
+                ]);
+            }
         }
     }
 

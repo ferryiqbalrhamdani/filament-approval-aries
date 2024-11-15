@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListMengetahuiIzinLemburs extends ListRecords
 {
+    protected ?string $heading = 'Data Izin Lembur';
+
     protected static string $resource = MengetahuiIzinLemburResource::class;
 
     protected function getHeaderActions(): array

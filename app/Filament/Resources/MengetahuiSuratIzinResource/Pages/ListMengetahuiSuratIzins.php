@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListMengetahuiSuratIzins extends ListRecords
 {
+    protected ?string $heading = 'Data Surat Izin';
+
     protected static string $resource = MengetahuiSuratIzinResource::class;
 
     protected function getHeaderActions(): array
