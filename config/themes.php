@@ -31,6 +31,6 @@ return [
 
     'default' => [
         'theme' => 'default',
-        'theme_color' => 'blue',
+        'theme_color' => 'amber',
     ],
 ];
