@@ -54,7 +54,7 @@ class IzinCutiApproveDuaResource extends Resource
     {
         return $table
             ->deferLoading()
-            ->poll('5s')
+            ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('izinCutiApprove.userCuti.full_name')
                     ->label('Nama User')

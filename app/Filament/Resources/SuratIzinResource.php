@@ -225,7 +225,7 @@ class SuratIzinResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('5s')
+            ->poll('60s')
             ->deferLoading()
             ->columns([
                 ViewColumn::make('is_draft')

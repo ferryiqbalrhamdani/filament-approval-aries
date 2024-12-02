@@ -16,6 +16,7 @@ use Filament\Tables\Columns\ViewColumn;
 use Filament\Infolists\Components\Group;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
@@ -66,7 +67,7 @@ class IzinLemburResource extends Resource
     {
         return $table
             ->deferLoading()
-            ->poll('5s')
+            ->poll('60s')
             ->columns([
                 ViewColumn::make('is_draft')
                     ->view('tables.columns.jenis')
@@ -190,7 +191,7 @@ class IzinLemburResource extends Resource
                 ])
                     ->link()
                     ->label('Actions'),
-            ])
+            ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

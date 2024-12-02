@@ -48,7 +48,7 @@ class IzinCutiApproveResource extends Resource
     {
         return $table
             ->deferLoading()
-            ->poll('5s')
+            ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('userCuti.full_name')
                     ->label('Nama User')
@@ -258,6 +258,8 @@ class IzinCutiApproveResource extends Resource
 
                 ]),
             ])
+            ->recordAction(null)
+            ->recordUrl(null)
             ->checkIfRecordIsSelectableUsing(
                 fn(IzinCutiApprove $record): int => $record->status === 0,
             )

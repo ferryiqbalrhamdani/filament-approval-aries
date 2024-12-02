@@ -24,7 +24,7 @@ class TotalIzinOverview extends BaseWidget
                 ->description('Jumlah Draft ' . number_format(SuratIzin::where('user_id', Auth::user()->id)->where('is_draft', true)->count(), 0, ',', '.')),
             Stat::make('Total Cuti', number_format(CutiKhusus::where('user_id', Auth::user()->id)->count() + CutiPribadi::where('user_id', Auth::user()->id)->count(), 0, ',', '.'))
                 ->description('Jumlah Draft ' . number_format(CutiKhusus::where('is_draft', true)->where('user_id', Auth::user()->id)->count() + CutiPribadi::where('is_draft', true)->where('user_id', Auth::user()->id)->count(), 0, ',', '.')),
-            Stat::make('Total Lemnbur', number_format(IzinLembur::where('user_id', Auth::user()->id)->count(), 0, ',', '.'))
+            Stat::make('Total Lembur', number_format(IzinLembur::where('user_id', Auth::user()->id)->count(), 0, ',', '.'))
                 ->description('Jumlah Draft ' . number_format(IzinLembur::where('user_id', Auth::user()->id)->where('is_draft', true)->count(), 0, ',', '.')),
         ];
     }

@@ -50,6 +50,12 @@ class MengetahuiIzinCutiResource extends Resource
                 Tables\Columns\TextColumn::make('izinCutiApprove.userCuti.full_name')
                     ->label('Nama User')
                     ->sortable(['first_name', 'last_name']),
+                Tables\Columns\TextColumn::make('izinCutiApprove.userCuti.company.slug')
+                    ->label('Perusahaan')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable()
+                    ->badge(),
                 Tables\Columns\TextColumn::make('izinCutiApprove.keterangan_cuti')
                     ->label('Keterangan Cuti')
                     ->badge()

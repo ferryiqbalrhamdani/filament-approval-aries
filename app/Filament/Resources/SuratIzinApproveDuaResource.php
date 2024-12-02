@@ -54,7 +54,7 @@ class SuratIzinApproveDuaResource extends Resource
     {
         return $table
             ->deferLoading()
-            ->poll('5s')
+            ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('suratIzin.user.full_name')
                     ->label('Nama User')

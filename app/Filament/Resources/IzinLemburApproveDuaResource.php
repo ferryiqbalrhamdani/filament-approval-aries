@@ -54,7 +54,7 @@ class IzinLemburApproveDuaResource extends Resource
     {
         return $table
             ->deferLoading()
-            ->poll('5s')
+            ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('izinLembur.user.full_name')
                     ->label('Nama User')
@@ -493,7 +493,7 @@ class IzinLemburApproveDuaResource extends Resource
                             ]),
                         Fieldset::make('Status')
                             ->schema([
-                                ViewEntry::make('izinLemburApprove.status')
+                                ViewEntry::make('izinLembur.izinLemburApprove.status')
                                     ->label('Status Satu')
                                     ->view('infolists.components.status'),
                                 ViewEntry::make('status')
