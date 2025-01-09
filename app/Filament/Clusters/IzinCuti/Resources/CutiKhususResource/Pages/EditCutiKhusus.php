@@ -67,6 +67,13 @@ class EditCutiKhusus extends EditRecord
             $data['mulai_cuti'] = $tanggalMulaiCuti->format('Y-m-d');
             $data['sampai_cuti'] = $tanggalSelesaiCuti->format('Y-m-d');
             $data['lama_cuti'] = '3 Bulan';
+        } elseif ($data['pilihan_cuti'] == 'Umroh') {
+            $tanggalMulaiCuti = Carbon::parse($data['mulai_cuti']);
+            $tanggalSelesaiCuti = $tanggalMulaiCuti->copy()->addDays(18);
+
+            $data['mulai_cuti'] = $tanggalMulaiCuti->format('Y-m-d');
+            $data['sampai_cuti'] = $tanggalSelesaiCuti->format('Y-m-d');
+            $data['lama_cuti'] = '19 Hari';
         } else {
             $tanggalIzin = Carbon::parse($data['mulai_cuti']);
             $sampaiTanggal = Carbon::parse($data['mulai_cuti']);

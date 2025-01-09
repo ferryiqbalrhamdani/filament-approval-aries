@@ -50,6 +50,7 @@ class CutiKhususResource extends Resource
                                     'Suami/Istri/Anak/Orangtua/Mertua/Menantu Meninggal' => 'Suami/Istri/Anak/Orangtua/Mertua/Menantu Meninggal',
                                     'Anggota Keluarga Dalam Satu Rumah Meninggal' => 'Anggota Keluarga Dalam Satu Rumah Meninggal',
                                     'Bencana Alam' => 'Bencana Alam',
+                                    'Umroh' => 'Umroh',
                                 ];
 
                                 // Add 'Cuti Melahirkan' if the user is female
@@ -74,6 +75,8 @@ class CutiKhususResource extends Resource
                                     $set('cuti_helper_text', 'Jatah cuti selama 2 hari');
                                 } elseif ($state === 'Anggota Keluarga Dalam Satu Rumah Meninggal' || $state === 'Bencana Alam') {
                                     $set('cuti_helper_text', 'Jatah cuti selama 1 hari');
+                                } elseif ($state === 'Umroh') {
+                                    $set('cuti_helper_text', 'Jatah cuti selama 19 hari');
                                 } else {
                                     $set('cuti_helper_text', null);
                                 }
