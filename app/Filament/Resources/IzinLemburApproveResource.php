@@ -91,6 +91,7 @@ class IzinLemburApproveResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\Filter::make('tanggal_lembur')
                     ->form([
