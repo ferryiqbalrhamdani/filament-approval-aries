@@ -119,12 +119,10 @@ class SuratIzinApproveDuaResource extends Resource
                     ->form([
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Tanggal Mulai')
-                            ->placeholder('Pilih Tanggal Mulai')
-                            ->default(Carbon::create(Carbon::now()->year, Carbon::now()->month - 1, 25)),
+                            ->placeholder('Pilih Tanggal Mulai'),
                         Forms\Components\DatePicker::make('end_date')
                             ->label('Tanggal Akhir')
-                            ->placeholder('Pilih Tanggal Akhir')
-                            ->default(Carbon::create(Carbon::now()->year, Carbon::now()->month, 25)),
+                            ->placeholder('Pilih Tanggal Akhir'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

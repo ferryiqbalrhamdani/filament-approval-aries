@@ -131,12 +131,10 @@ class IzinCutiApproveDuaResource extends Resource
                     ->form([
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Tanggal Mulai')
-                            ->placeholder('Pilih Tanggal Mulai')
-                            ->default(Carbon::create(Carbon::now()->year, Carbon::now()->month - 1, 25)),
+                            ->placeholder('Pilih Tanggal Mulai'),
                         Forms\Components\DatePicker::make('end_date')
                             ->label('Tanggal Akhir')
-                            ->placeholder('Pilih Tanggal Akhir')
-                            ->default(Carbon::create(Carbon::now()->year, Carbon::now()->month, 25)),
+                            ->placeholder('Pilih Tanggal Akhir'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -197,56 +195,6 @@ class IzinCutiApproveDuaResource extends Resource
                 Tables\Actions\ActionGroup::make([
 
                     Tables\Actions\ViewAction::make(),
-                    // Tables\Actions\Action::make('Kembalikan Data')
-                    //     ->color('gray')
-                    //     ->icon('heroicon-o-arrow-uturn-left')
-                    //     ->requiresConfirmation()
-                    //     ->action(function (IzinCutiApproveDua $record, array $data): void {
-                    //         $izinCuti = $record->izinCutiApprove;
-
-                    //         $leaveMonth = \Carbon\Carbon::parse($izinCuti->tanggal_mulai)->format('Y-m');
-                    //         $currentMonth = now()->format('Y-m');
-                    //         if ($leaveMonth > $currentMonth) {
-                    //             Notification::make()
-                    //                 ->title('Error')
-                    //                 ->body('Cuti tidak dapat dikembalikan karena tanggal cuti melewati bulan ini.')
-                    //                 ->danger()
-                    //                 ->send();
-                    //             return;
-                    //         }
-
-                    //         if ($izinCuti->keterangan_cuti == 'Cuti Pribadi') {
-                    //             if ($record->status == 2) {
-                    //                 $lamaCuti = explode(' ', $izinCuti->lama_cuti);
-                    //                 $sisaCuti = $izinCuti->userCuti->sisa_cuti - (int)$lamaCuti[0];
-
-                    //                 if ($sisaCuti > 6) {
-                    //                     Notification::make()
-                    //                         ->title('Error')
-                    //                         ->body('Jumlah izin cuti melebihi batas maksimal 6 hari.')
-                    //                         ->danger()
-                    //                         ->send();
-                    //                     return;
-                    //                 }
-
-                    //                 $izinCuti->userCuti->update([
-                    //                     'sisa_cuti' => $sisaCuti,
-                    //                 ]);
-                    //             }
-                    //         }
-
-                    //         $record->update([
-                    //             'status' => 0,
-                    //             'keterangan' => null,
-                    //             'user_id' => Auth::user()->id,
-                    //         ]);
-
-                    //         Notification::make()
-                    //             ->title('Data berhasil di kembalikan')
-                    //             ->success()
-                    //             ->send();
-                    //     })
-                    //     ->visible(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Approve')
                         ->requiresConfirmation()
                         ->icon('heroicon-o-check-circle')
