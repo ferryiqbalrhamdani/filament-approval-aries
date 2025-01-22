@@ -63,32 +63,11 @@ class IzinLemburApproveDuaResource extends Resource
                 Tables\Columns\TextColumn::make('izinLembur.user.company.slug')
                     ->badge()
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('izinLembur.tanggal_lembur')
                     ->label('Tanggal Lembur')
                     ->date()
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('izinLembur.start_time')
-                    ->label('Start Time')
-                    ->time('H:i')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('izinLembur.end_time')
-                    ->label('End Time')
-                    ->time('H:i')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('izinLembur.lama_lembur')
-                    ->label('Lama Lembur')
-                    ->badge()
-                    ->suffix(' Jam')
-                    ->sortable()
-                    ->searchable(),
-                ViewColumn::make('status')
-                    ->view('tables.columns.status')
-                    ->label('Status')
-                    ->alignment(Alignment::Center)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('izinLembur.tarifLembur.status_hari')
@@ -99,7 +78,39 @@ class IzinLemburApproveDuaResource extends Resource
                         'Weekend' => 'success',
                     })
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('izinLembur.start_time')
+                    ->label('Start Time')
+                    ->time('H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('izinLembur.end_time')
+                    ->label('End Time')
+                    ->time('H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('izinLembur.lama_lembur')
+                    ->label('Lama Lembur')
+                    ->badge()
+                    ->suffix(' Jam')
+                    ->sortable()
+                    ->searchable(),
+                ViewColumn::make('izinLembur.izinLemburApprove.status')
+                    ->view('tables.columns.status')
+                    ->label('Status Satu')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
+                ViewColumn::make('status')
+                    ->view('tables.columns.status')
+                    ->label('Status Dua')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('izinLembur.tarifLembur.tarif_lembur_perjam')
                     ->label('Upah Per Jam')
                     ->money(
@@ -107,6 +118,7 @@ class IzinLemburApproveDuaResource extends Resource
                         locale: 'id'
                     )
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('izinLembur.tarifLembur.uang_makan')
                     ->label('Uang Makan')
@@ -115,6 +127,7 @@ class IzinLemburApproveDuaResource extends Resource
                         locale: 'id'
                     )
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('izinLembur.tarifLembur.tarif_lumsum')
                     ->label('Lumsum')
@@ -123,6 +136,7 @@ class IzinLemburApproveDuaResource extends Resource
                         locale: 'id'
                     )
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('izinLembur.total')
                     ->label('Total')
@@ -150,6 +164,8 @@ class IzinLemburApproveDuaResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
+            ->recordAction(null)
+            ->recordUrl(null)
             ->filters([
                 // Filter berdasarkan status
                 Tables\Filters\Filter::make('status')
@@ -246,13 +262,24 @@ class IzinLemburApproveDuaResource extends Resource
                         return $indicators;
                     }),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
+            ->actions(
+                [
+                    Tables\Actions\ActionGroup::make([])
+                        ->link()
+                        ->label('Actions'),
 
-                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->button()
+                        ->modalHeading('Lihat')
+                        ->label('')
+                        ->tooltip('Lihat'),
                     Tables\Actions\Action::make('Kembalikan Data')
+                        ->modalHeading('Kembalikan Data')
+                        ->label('')
+                        ->tooltip('Kembalikan Data')
                         ->color('gray')
-                        ->icon('heroicon-o-arrow-uturn-left')
+                        ->button()
+                        ->icon('heroicon-s-arrow-uturn-left')
                         ->requiresConfirmation()
                         ->action(function (IzinLemburApproveDua $record, array $data): void {
 
@@ -279,8 +306,13 @@ class IzinLemburApproveDuaResource extends Resource
                         })
                         ->visible(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Approve')
+                        ->modalHeading('Approve')
+                        ->label('')
+                        ->tooltip('Approve')
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-check-circle')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-check')
                         ->action(function (IzinLemburApproveDua $record, array $data): void {
                             $izinLembur = $record->izinLembur;
                             $tarifLembur = $izinLembur->tarifLembur;
@@ -310,6 +342,11 @@ class IzinLemburApproveDuaResource extends Resource
                         ->color('success')
                         ->hidden(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Reject')
+                        ->modalHeading('Reject')
+                        ->label('')
+                        ->tooltip('Reject')
+                        ->button()
+                        ->outlined()
                         ->form([
                             Forms\Components\TextArea::make('keterangan')
                                 // ->hiddenLabel()
@@ -317,7 +354,7 @@ class IzinLemburApproveDuaResource extends Resource
                                 ->maxLength(255),
                         ])
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-x-circle')
+                        ->icon('heroicon-s-x-mark')
                         ->action(function (IzinLemburApproveDua $record, array $data): void {
                             $record->update([
                                 'user_id' => Auth::user()->id,
@@ -331,10 +368,10 @@ class IzinLemburApproveDuaResource extends Resource
                         })
                         ->color('danger')
                         ->hidden(fn($record) => $record->status > 0),
-                ])
-                    ->link()
-                    ->label('Actions'),
-            ], position: ActionsPosition::BeforeCells)
+
+                ],
+                // position: ActionsPosition::BeforeCells
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('Approve yang dipilih')

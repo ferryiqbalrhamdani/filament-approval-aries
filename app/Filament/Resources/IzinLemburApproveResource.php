@@ -54,6 +54,7 @@ class IzinLemburApproveResource extends Resource
                 Tables\Columns\TextColumn::make('izinLembur.user.company.slug')
                     ->label('Perusahaaan')
                     ->alignment(Alignment::Center)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->badge()
                     ->sortable()
                     ->searchable(),
@@ -79,8 +80,16 @@ class IzinLemburApproveResource extends Resource
                     ->badge()
                     ->suffix(' Jam')
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 ViewColumn::make('status')
+                    ->label('Status Satu')
+                    ->view('tables.columns.status')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
+                ViewColumn::make('izinLembur.izinLemburApproveDua.status')
+                    ->label('Status Dua')
                     ->view('tables.columns.status')
                     ->alignment(Alignment::Center)
                     ->sortable()
@@ -155,11 +164,21 @@ class IzinLemburApproveResource extends Resource
                     }),
                 // Filter lainnya...
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
+            ->actions(
+                [
+                    Tables\Actions\ActionGroup::make([])
+                        ->link()
+                        ->label('Actions'),
 
-                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->label('')
+                        ->tooltip('Lihat')
+                        ->button(),
                     Tables\Actions\Action::make('Kembalikan Data')
+                        ->modalHeading('Kembalikan Data')
+                        ->label('')
+                        ->tooltip('Kembalikan Data')
+                        ->button()
                         ->color('gray')
                         ->icon('heroicon-o-arrow-uturn-left')
                         ->requiresConfirmation()
@@ -177,8 +196,13 @@ class IzinLemburApproveResource extends Resource
                         })
                         ->visible(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Approve')
+                        ->modalHeading('Approve')
+                        ->label('')
+                        ->tooltip('Approve')
+                        ->button()
+                        ->outlined()
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-check-circle')
+                        ->icon('heroicon-s-check')
                         ->action(function (IzinLemburApprove $record, array $data): void {
                             // dd($record->IzinLembur->user->user_approve_dua_id, $record->IzinLembur->IzinLemburApproveDua);
                             $record->update([
@@ -194,6 +218,12 @@ class IzinLemburApproveResource extends Resource
                         ->color('success')
                         ->hidden(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Reject')
+                        ->modalHeading('Reject')
+                        ->label('')
+                        ->tooltip('Reject')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-x-mark')
                         ->form([
                             Forms\Components\TextArea::make('keterangan')
                                 // ->hiddenLabel()
@@ -201,7 +231,6 @@ class IzinLemburApproveResource extends Resource
                                 ->maxLength(255),
                         ])
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-x-circle')
                         ->action(function (IzinLemburApprove $record, array $data): void {
                             $record->update([
                                 'user_id' => Auth::user()->id,
@@ -216,10 +245,10 @@ class IzinLemburApproveResource extends Resource
                         })
                         ->color('danger')
                         ->hidden(fn($record) => $record->status > 0),
-                ])
-                    ->link()
-                    ->label('Actions'),
-            ], position: ActionsPosition::BeforeCells)
+
+                ],
+                // position: ActionsPosition::BeforeCells
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

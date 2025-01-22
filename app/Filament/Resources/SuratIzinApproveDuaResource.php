@@ -65,6 +65,7 @@ class SuratIzinApproveDuaResource extends Resource
                     ->alignment(Alignment::Center)
                     ->badge()
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suratIzin.keperluan_izin')
                     ->label('Keperluan Izin')
@@ -72,7 +73,7 @@ class SuratIzinApproveDuaResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suratIzin.lama_izin')
                     ->label('Lama Izin')
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suratIzin.tanggal_izin')
@@ -88,7 +89,7 @@ class SuratIzinApproveDuaResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suratIzin.durasi_izin')
                     ->label('Durasi Izin')
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suratIzin.jam_izin')
@@ -101,8 +102,14 @@ class SuratIzinApproveDuaResource extends Resource
                     ->toggleable()
                     ->sortable()
                     ->time('H:i'),
+                ViewColumn::make('suratIzin.suratIzinApprove.status')
+                    ->label('Status Satu')
+                    ->view('tables.columns.status')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
                 ViewColumn::make('status')
-                    ->label('Status')
+                    ->label('Status Dua')
                     ->view('tables.columns.status')
                     ->alignment(Alignment::Center)
                     ->sortable()
@@ -177,11 +184,20 @@ class SuratIzinApproveDuaResource extends Resource
                     }),
                 // Filter lainnya...
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-
-                    Tables\Actions\ViewAction::make(),
+            ->actions(
+                [
+                    // Tables\Actions\ActionGroup::make([])
+                    //     ->link()
+                    //     ->label('Actions'),
+                    Tables\Actions\ViewAction::make()
+                        ->label('')
+                        ->tooltip('Lihat')
+                        ->button(),
                     Tables\Actions\Action::make('Kembalikan Data')
+                        ->modalHeading('Kembalikan Data')
+                        ->label('')
+                        ->button()
+                        ->tooltip('Kembalikan Data')
                         ->color('gray')
                         ->icon('heroicon-o-arrow-uturn-left')
                         ->requiresConfirmation()
@@ -201,8 +217,14 @@ class SuratIzinApproveDuaResource extends Resource
                         })
                         ->visible(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Approve')
+                        ->modalHeading('Approve')
+                        ->label('')
+                        ->button()
+                        ->tooltip('Approve')
+                        ->outlined()
+                        ->color('success')
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-check-circle')
+                        ->icon('heroicon-s-check')
                         ->action(function (SuratIzinApproveDua $record, array $data): void {
                             $record->update([
                                 'status' => 1,
@@ -215,17 +237,23 @@ class SuratIzinApproveDuaResource extends Resource
                                 ->success()
                                 ->send();
                         })
-                        ->color('success')
                         ->hidden(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Reject')
+                        ->modalHeading('Reject')
+                        ->label('')
+                        ->tooltip('Reject')
+                        ->button()
+                        ->outlined()
+                        ->color('danger')
                         ->form([
                             Forms\Components\TextArea::make('keterangan')
                                 // ->hiddenLabel()
                                 ->required()
                                 ->maxLength(255),
                         ])
+
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-x-circle')
+                        ->icon('heroicon-s-x-mark')
                         ->action(function (SuratIzinApproveDua $record, array $data): void {
                             $record->update([
                                 'user_id' => Auth::user()->id,
@@ -239,12 +267,11 @@ class SuratIzinApproveDuaResource extends Resource
                                 ->success()
                                 ->send();
                         })
-                        ->color('danger')
                         ->hidden(fn($record) => $record->status > 0),
-                ])
-                    ->link()
-                    ->label('Actions'),
-            ], position: ActionsPosition::BeforeCells)
+
+                ],
+                // position: ActionsPosition::BeforeCells
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
 

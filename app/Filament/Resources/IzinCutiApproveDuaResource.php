@@ -31,6 +31,7 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\IzinCutiApproveDuaResource\Pages;
 use App\Filament\Resources\IzinCutiApproveDuaResource\RelationManagers;
 use App\Filament\Resources\IzinCutiApproveDuaResource\Widgets\IzinCutiApproveDuaOverview;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IzinCutiApproveDuaResource extends Resource
 {
@@ -64,7 +65,8 @@ class IzinCutiApproveDuaResource extends Resource
                     ->badge()
                     ->alignment(Alignment::Center)
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('izinCutiApprove.keterangan_cuti')
                     ->label('Keterangan Cuti')
                     ->alignment(Alignment::Center)
@@ -79,9 +81,17 @@ class IzinCutiApproveDuaResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('izinCutiApprove.lama_cuti')
-                    ->label('Lama Cuti'),
-
+                    ->label('Lama Cuti')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                ViewColumn::make('izinCutiApprove.status')
+                    ->label('Status Satu')
+                    ->view('tables.columns.status')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
                 ViewColumn::make('status')
+                    ->label('Status Dua')
                     ->view('tables.columns.status')
                     ->alignment(Alignment::Center)
                     ->sortable()
@@ -191,13 +201,22 @@ class IzinCutiApproveDuaResource extends Resource
             ->recordAction(null)
             ->recordUrl(null)
             ->defaultSort('created_at', 'desc')
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-
-                    Tables\Actions\ViewAction::make(),
+            ->actions(
+                [
+                    Tables\Actions\ViewAction::make()
+                        ->button()
+                        ->modalHeading('Lihat')
+                        ->label('')
+                        ->tooltip('Lihat')
+                        ->outlined(),
                     Tables\Actions\Action::make('Approve')
+                        ->modalHeading('Approve')
+                        ->label('')
+                        ->tooltip('Approve')
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-check-circle')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-check')
                         ->action(function (IzinCutiApproveDua $record, array $data): void {
 
                             $record->update([
@@ -214,6 +233,12 @@ class IzinCutiApproveDuaResource extends Resource
                         ->color('success')
                         ->hidden(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Reject')
+                        ->modalHeading('Reject')
+                        ->label('')
+                        ->tooltip('Reject')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-x-mark')
                         ->form([
                             Forms\Components\TextArea::make('keterangan')
                                 // ->hiddenLabel()
@@ -221,7 +246,6 @@ class IzinCutiApproveDuaResource extends Resource
                                 ->maxLength(255),
                         ])
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-x-circle')
                         ->action(function ($record, array $data): void {
                             $izinCuti = $record->izinCutiApprove;
 
@@ -272,10 +296,14 @@ class IzinCutiApproveDuaResource extends Resource
                         })
                         ->color('danger')
                         ->hidden(fn($record) => $record->status > 0),
-                ])
-                    ->link()
-                    ->label('Actions'),
-            ], position: ActionsPosition::BeforeCells)
+                    Tables\Actions\ActionGroup::make([])
+                        ->link()
+                        ->button()
+                        ->label('Actions'),
+
+                ],
+                // position: ActionsPosition::BeforeCells
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -359,6 +387,18 @@ class IzinCutiApproveDuaResource extends Resource
                     ->label('Nama User')
                     ->collapsible(),
             ]);
+    }
+
+    public static function exportToPDF(Collection $records)
+    {
+        // Load view dan generate PDF
+        $pdf = Pdf::loadView('pdf.export-izin-cuti', ['records' => $records]);
+
+        // Return PDF sebagai response download
+        return response()->streamDownload(
+            fn() => print($pdf->output()),
+            'data-izin-cuti-' . Carbon::now() . '.pdf'
+        );
     }
 
     public static function getRelations(): array

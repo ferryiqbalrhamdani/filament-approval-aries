@@ -162,32 +162,44 @@ class IzinCutiApproveResource extends Resource
                         return $indicators;
                     }),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
+            ->actions(
+                [
+                    Tables\Actions\ActionGroup::make([])
+                        ->link()
+                        ->label('Actions'),
 
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\Action::make('Kembalikan Data')
-                        ->color('gray')
-                        ->icon('heroicon-o-arrow-uturn-left')
-                        ->requiresConfirmation()
-                        ->action(function ($record): void {
-                            // Hapus data di IzinCutiApproveDua jika ada dan statusnya 0
+                    Tables\Actions\ViewAction::make()
+                        ->modalHeading('Lihat')
+                        ->label('')
+                        ->tooltip('Lihat')
+                        ->button(),
+                    // Tables\Actions\Action::make('Kembalikan Data')
+                    //     ->color('gray')
+                    //     ->icon('heroicon-o-arrow-uturn-left')
+                    //     ->requiresConfirmation()
+                    //     ->action(function ($record): void {
+                    //         // Hapus data di IzinCutiApproveDua jika ada dan statusnya 0
 
-                            $record->update([
-                                'status' => 0,
-                                'keterangan' => null,
-                            ]);
+                    //         $record->update([
+                    //             'status' => 0,
+                    //             'keterangan' => null,
+                    //         ]);
 
 
-                            Notification::make()
-                                ->title('Data berhasil di kembalikan')
-                                ->success()
-                                ->send();
-                        })
-                        ->visible(fn($record) => $record->status > 0),
+                    //         Notification::make()
+                    //             ->title('Data berhasil di kembalikan')
+                    //             ->success()
+                    //             ->send();
+                    //     })
+                    //     ->visible(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Approve')
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-check-circle')
+                        ->modalHeading('Approve')
+                        ->label('')
+                        ->tooltip('Approve')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-check')
                         ->action(function ($record): void {
                             // Approve Data
                             $record->update([
@@ -202,6 +214,12 @@ class IzinCutiApproveResource extends Resource
                         ->color('success')
                         ->hidden(fn($record) => $record->status > 0),
                     Tables\Actions\Action::make('Reject')
+                        ->modalHeading('Reject')
+                        ->label('')
+                        ->tooltip('Reject')
+                        ->button()
+                        ->outlined()
+                        ->icon('heroicon-s-x-mark')
                         ->form([
                             Forms\Components\TextArea::make('keterangan')
                                 // ->hiddenLabel()
@@ -209,7 +227,6 @@ class IzinCutiApproveResource extends Resource
                                 ->maxLength(255),
                         ])
                         ->requiresConfirmation()
-                        ->icon('heroicon-o-x-circle')
                         ->action(function (IzinCutiApprove $record, array $data): void {
                             $record->update([
                                 'user_id' => Auth::user()->id,
@@ -224,10 +241,10 @@ class IzinCutiApproveResource extends Resource
                         })
                         ->color('danger')
                         ->hidden(fn($record) => $record->status > 0),
-                ])
-                    ->link()
-                    ->label('Actions'),
-            ], position: ActionsPosition::BeforeCells)
+
+                ],
+                // position: ActionsPosition::BeforeCells
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
