@@ -70,6 +70,12 @@ class IzinCutiApproveResource extends Resource
                     ->alignment(Alignment::Center)
                     ->sortable()
                     ->searchable(),
+                ViewColumn::make('izinCutiApproveDua.status')
+                    ->view('tables.columns.status')
+                    ->label('Status Dua')
+                    ->alignment(Alignment::Center)
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tgl Dibuat')
                     ->date()
