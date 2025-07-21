@@ -38,6 +38,7 @@ class User extends Authenticatable implements HasAvatar
         'user_approve_id',
         'user_mengetahui_id',
         'sisa_cuti_sebelumnya',
+        'remember_token'
     ];
 
     public function getFilamentAvatarUrl(): ?string
