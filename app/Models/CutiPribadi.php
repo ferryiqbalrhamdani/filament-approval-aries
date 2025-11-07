@@ -18,6 +18,64 @@ class CutiPribadi extends Model
         'is_draft',
     ];
 
+   protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($cuti) {
+            $jatahAktif = $cuti->user->cutis()
+                ->whereDate('tanggal_mulai', '<=', now())
+                ->whereDate('tanggal_hangus', '>', now())
+                ->orderBy('tahun', 'asc')
+                ->first();
+
+            if (!$jatahAktif || $jatahAktif->sisa_cuti < $cuti->lama_cuti) {
+                throw new \Exception('Sisa cuti tidak mencukupi untuk membuat cuti pribadi ini.');
+            }
+        });
+
+        static::created(function ($cuti) {
+            $cuti->kurangiSisaCuti();
+        });
+
+        static::deleted(function ($cuti) {
+            $cuti->kembalikanSisaCuti();
+        });
+    }
+
+
+    public function kurangiSisaCuti()
+    {
+        $lama = $this->lama_cuti;
+
+        // Cari jatah cuti aktif milik user (yang belum hangus & masih ada sisa)
+        $jatahAktif = $this->user->cutis()
+            ->whereDate('tanggal_mulai', '<=', now())
+            ->whereDate('tanggal_hangus', '>', now())
+            ->orderBy('tahun', 'asc')
+            ->first();
+
+        if ($jatahAktif) {
+            $jatahAktif->decrement('sisa_cuti', $lama);
+        }
+    }
+
+    public function kembalikanSisaCuti()
+    {
+        $lama = $this->lama_cuti;
+
+        // Jika cuti dihapus, kembalikan sisa cutinya
+        $jatahAktif = $this->user->cutis()
+            ->whereDate('tanggal_mulai', '<=', now())
+            ->whereDate('tanggal_hangus', '>', now())
+            ->orderBy('tahun', 'asc')
+            ->first();
+
+        if ($jatahAktif) {
+            $jatahAktif->increment('sisa_cuti', $lama);
+        }
+    }
+
 
     public function user()
     {

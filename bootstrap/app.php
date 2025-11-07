@@ -24,10 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('app:update-izin')
             ->evenInMaintenanceMode()
             ->monthlyOn(25, '08:00');
-        $schedule->command('app:update-izin')
+            // Jalankan setiap hari jam 00:00
+        $schedule->command('cuti:update-tahunan')
             ->evenInMaintenanceMode()
-            ->monthlyOn(25, '13:00');
-        $schedule->command('app:update-izin')
-            ->evenInMaintenanceMode()
-            ->monthlyOn(25, '15:00');
+            ->dailyAt('00:00');
     })->create();

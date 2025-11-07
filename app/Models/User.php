@@ -101,4 +101,16 @@ class User extends Authenticatable implements HasAvatar
     // {
     //     return 'username';
     // }
+
+    public function cutis()
+    {
+        return $this->hasMany(UserCuti::class);
+    }
+
+    public function getSisaCutiTerbaruAttribute()
+    {
+        return $this->cutis()->latest('tahun')->value('sisa_cuti') ?? 0;
+    }
+
+
 }

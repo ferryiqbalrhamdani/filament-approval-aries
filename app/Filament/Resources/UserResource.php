@@ -137,6 +137,11 @@ class UserResource extends Resource
                         Forms\Components\DatePicker::make('tgl_pengangkatan')
                             ->inlineLabel()
                             ->visible(fn(Get $get) => $get('status_karyawan') === 'tetap'),
+                        Forms\Components\TextInput::make('sisa_cuti_actual')
+                            ->label('Sisa Cuti')
+                            ->disabled()
+                            ->visibleOn('edit')
+                            ->inlineLabel(),
                         Forms\Components\Select::make('roles')
                             ->relationship('roles', 'name', fn(Builder $query) => $query->orderBy('name', 'asc'))
                             ->required()
@@ -286,7 +291,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CutisRelationManager::class,
         ];
     }
 

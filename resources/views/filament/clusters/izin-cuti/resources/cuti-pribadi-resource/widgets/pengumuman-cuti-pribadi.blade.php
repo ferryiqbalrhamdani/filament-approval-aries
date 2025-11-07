@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section>
         <div class="flex flex-col items-center justify-center ">
-            <h1 class="text-lg font-semibold">Pemberitahuan 📢</h1>
+            <h1 class="text-lg font-semibold">📢 Pemberitahuan</h1>
         </div>
         <hr class="border-t border-gray-300">
         <br>
