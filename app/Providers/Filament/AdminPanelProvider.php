@@ -9,6 +9,7 @@ use Filament\PanelProvider;
 use App\Filament\Auth\CustomLogin;
 use Filament\Support\Colors\Color;
 use Awcodes\Overlook\OverlookPlugin;
+use App\Livewire\CustomProfileComponent;
 use App\Filament\Auth\CustomPasswordReset;
 use Filament\Http\Middleware\Authenticate;
 use Awcodes\Overlook\Widgets\OverlookWidget;
@@ -22,6 +23,7 @@ use App\Filament\Widgets\TotalIzinLemburOverview;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Override\EditProfile\MyEditProfileForm;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -78,12 +80,14 @@ class AdminPanelProvider extends PanelProvider
                         ->setTitle('Profil Saya')
                         ->setNavigationLabel('Profil Saya')
                         ->setNavigationGroup('Pengaturan')
+                        ->customProfileComponents([
+                            CustomProfileComponent::class,
+                        ])
+                        ->shouldShowEditProfileForm(false)
                         ->setSort(53)
                         ->setIcon('heroicon-o-user')
                         ->shouldShowDeleteAccountForm(false)
-                        ->shouldShowAvatarForm(
-                            directory: 'avatars',
-                        ),
+                        ->shouldShowAvatarForm(),
                     \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                     // OverlookPlugin::make()
                     //     ->sort(2)
