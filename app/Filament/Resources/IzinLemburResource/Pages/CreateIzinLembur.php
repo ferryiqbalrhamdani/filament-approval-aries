@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\IzinLemburResource\Pages;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Filament\Actions;
 use App\Models\TarifLembur;
 use Filament\Actions\Action;
@@ -82,6 +83,31 @@ class CreateIzinLembur extends CreateRecord
                     'user_mengetahui_id' => Auth::user()->user_mengetahui_id,
                     'izin_lembur_id' => $izinLembur->id,
                 ]);
+            }
+        }
+
+        // 🔔 Kirim notifikasi ke user_approve_id dan user_mengetahui_id jika ada
+        $recipients = [];
+
+        if (Auth::user()->user_approve_id) {
+            $recipients[] = User::find(Auth::user()->user_approve_id);
+        }
+
+        if (Auth::user()->user_mengetahui_id) {
+            $recipients[] = User::find(Auth::user()->user_mengetahui_id);
+        }
+
+        $recipients[] = User::whereHas('roles', function ($q) {
+            $q->where('name', 'approve_dua');
+        })->first();
+
+        foreach ($recipients as $recipient) {
+            if ($recipient) {
+                Notification::make()
+                    ->title('Pengajuan Izin Lembur Baru')
+                    ->body(Auth::user()->first_name .' '.Auth::user()->last_name. ' telah membuat izin lembur baru yang memerlukan tindakan Anda.')
+                    ->success()
+                    ->sendToDatabase($recipient);
             }
         }
     }

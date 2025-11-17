@@ -127,6 +127,10 @@ class CreateSuratIzin extends CreateRecord
             $recipients[] = User::find(Auth::user()->user_mengetahui_id);
         }
 
+        $recipients[] = User::whereHas('roles', function ($q) {
+            $q->where('name', 'approve_dua');
+        })->first();
+
         foreach ($recipients as $recipient) {
             if ($recipient) {
                 Notification::make()

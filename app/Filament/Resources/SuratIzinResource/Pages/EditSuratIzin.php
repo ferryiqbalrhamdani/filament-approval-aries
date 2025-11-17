@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SuratIzinResource\Pages;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\Auth;
@@ -100,6 +101,31 @@ class EditSuratIzin extends EditRecord
 
             $suratIzin->suratIzinApprove()->delete();
             $suratIzin->suratIzinApproveDua()->delete();
+        }
+
+        // 🔔 Kirim notifikasi ke user_approve_id dan user_mengetahui_id jika ada
+        $recipients = [];
+
+        if (Auth::user()->user_approve_id) {
+            $recipients[] = User::find(Auth::user()->user_approve_id);
+        }
+
+        if (Auth::user()->user_mengetahui_id) {
+            $recipients[] = User::find(Auth::user()->user_mengetahui_id);
+        }
+
+        $recipients[] = User::whereHas('roles', function ($q) {
+            $q->where('name', 'approve_dua');
+        })->first();
+
+        foreach ($recipients as $recipient) {
+            if ($recipient) {
+                Notification::make()
+                    ->title('Pengajuan Surat Izin di Ubah')
+                    ->body(Auth::user()->first_name .' '.Auth::user()->last_name. ' telah mengubah surat izin.')
+                    ->success()
+                    ->sendToDatabase($recipient);
+            }
         }
     }
 
