@@ -23,6 +23,7 @@ use Filament\Infolists\Components\ViewEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\IzinLemburApproveResource\Pages;
 use App\Filament\Resources\IzinLemburApproveResource\RelationManagers;
+use Filament\Forms\Components\Textarea;
 
 class IzinLemburApproveResource extends Resource
 {
@@ -225,7 +226,7 @@ class IzinLemburApproveResource extends Resource
                         ->outlined()
                         ->icon('heroicon-s-x-mark')
                         ->form([
-                            Forms\Components\TextArea::make('keterangan')
+                            TextArea::make('keterangan')
                                 // ->hiddenLabel()
                                 ->required()
                                 ->maxLength(255),

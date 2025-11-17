@@ -31,6 +31,7 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\SuratIzinApproveDuaResource\Pages;
 use App\Filament\Resources\SuratIzinApproveDuaResource\RelationManagers;
 use App\Filament\Resources\SuratIzinApproveDuaResource\Widgets\SuratIzinApproveDuaOverview;
+use Filament\Forms\Components\Textarea;
 
 class SuratIzinApproveDuaResource extends Resource
 {
@@ -246,7 +247,7 @@ class SuratIzinApproveDuaResource extends Resource
                         ->outlined()
                         ->color('danger')
                         ->form([
-                            Forms\Components\TextArea::make('keterangan')
+                            TextArea::make('keterangan')
                                 // ->hiddenLabel()
                                 ->required()
                                 ->maxLength(255),

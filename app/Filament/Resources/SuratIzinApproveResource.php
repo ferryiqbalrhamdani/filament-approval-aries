@@ -26,6 +26,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SuratIzinApproveResource\Pages;
 use App\Filament\Resources\SuratIzinApproveResource\RelationManagers;
+use Filament\Forms\Components\Textarea;
 
 class SuratIzinApproveResource extends Resource
 {
@@ -511,8 +512,7 @@ class SuratIzinApproveResource extends Resource
                         ->outlined()
                         ->icon('heroicon-s-x-mark')
                         ->form([
-                            Forms\Components\TextArea::make('keterangan')
-                                // ->hiddenLabel()
+                            TextArea::make('keterangan')
                                 ->required()
                                 ->maxLength(255),
                         ])

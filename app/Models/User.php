@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Storage;
 use Filament\Models\Contracts\HasAvatar;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements HasAvatar
+class User extends Authenticatable implements HasAvatar, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -40,6 +41,11 @@ class User extends Authenticatable implements HasAvatar
         'sisa_cuti_sebelumnya',
         'remember_token'
     ];
+
+    public function getFilamentName(): string
+    {
+        return $this->getAttributeValue('first_name') . ' ' . $this->getAttributeValue('last_name');
+    }
 
     public function getFilamentAvatarUrl(): ?string
     {

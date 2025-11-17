@@ -32,6 +32,7 @@ use App\Filament\Resources\IzinCutiApproveDuaResource\Pages;
 use App\Filament\Resources\IzinCutiApproveDuaResource\RelationManagers;
 use App\Filament\Resources\IzinCutiApproveDuaResource\Widgets\IzinCutiApproveDuaOverview;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Forms\Components\Textarea;
 
 class IzinCutiApproveDuaResource extends Resource
 {
@@ -240,7 +241,7 @@ class IzinCutiApproveDuaResource extends Resource
                         ->outlined()
                         ->icon('heroicon-s-x-mark')
                         ->form([
-                            Forms\Components\TextArea::make('keterangan')
+                            TextArea::make('keterangan')
                                 // ->hiddenLabel()
                                 ->required()
                                 ->maxLength(255),

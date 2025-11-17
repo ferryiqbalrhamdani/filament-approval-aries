@@ -31,6 +31,7 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\IzinLemburApproveDuaResource\Pages;
 use App\Filament\Resources\IzinLemburApproveDuaResource\RelationManagers;
 use App\Filament\Resources\IzinLemburApproveDuaResource\Widgets\IzinLemburApproveDuaOverview;
+use Filament\Forms\Components\Textarea;
 
 class IzinLemburApproveDuaResource extends Resource
 {
@@ -348,7 +349,7 @@ class IzinLemburApproveDuaResource extends Resource
                         ->button()
                         ->outlined()
                         ->form([
-                            Forms\Components\TextArea::make('keterangan')
+                            TextArea::make('keterangan')
                                 // ->hiddenLabel()
                                 ->required()
                                 ->maxLength(255),
