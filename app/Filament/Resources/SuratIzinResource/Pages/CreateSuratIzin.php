@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SuratIzinResource\Pages;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\Auth;
@@ -83,12 +84,13 @@ class CreateSuratIzin extends CreateRecord
         return $data;
     }
 
-    protected function afterCreate(): void
+   protected function afterCreate(): void
     {
         $suratIzin = $this->record;
 
-        if ($suratIzin->is_draft == false) {
-            if (Auth::user()->user_approve_id != null) {
+        if (! $suratIzin->is_draft) {
+            // Buat approval pertama
+            if (Auth::user()->user_approve_id) {
                 $suratIzin->suratIzinApprove()->create([
                     'surat_izin_id' => $suratIzin->id,
                     'user_id' => Auth::user()->user_approve_id,
@@ -100,17 +102,46 @@ class CreateSuratIzin extends CreateRecord
                 ]);
             }
 
+            // Buat approval kedua
             $suratIzin->suratIzinApproveDua()->create([
                 'surat_izin_id' => $suratIzin->id,
             ]);
 
-            if (Auth::user()->user_mengetahui_id != null) {
+            // Buat mengetahui jika ada
+            if (Auth::user()->user_mengetahui_id) {
                 $suratIzin->mengetahui()->create([
                     'user_mengetahui_id' => Auth::user()->user_mengetahui_id,
                     'surat_izin_id' => $suratIzin->id,
                 ]);
             }
         }
+
+        // 🔔 Kirim notifikasi ke user_approve_id dan user_mengetahui_id jika ada
+        $recipients = [];
+
+        if (Auth::user()->user_approve_id) {
+            $recipients[] = User::find(Auth::user()->user_approve_id);
+        }
+
+        if (Auth::user()->user_mengetahui_id) {
+            $recipients[] = User::find(Auth::user()->user_mengetahui_id);
+        }
+
+        foreach ($recipients as $recipient) {
+            if ($recipient) {
+                Notification::make()
+                    ->title('Pengajuan Surat Izin Baru')
+                    ->body(Auth::user()->first_name .' '.Auth::user()->last_name. ' telah membuat surat izin baru yang memerlukan tindakan Anda.')
+                    ->success()
+                    ->sendToDatabase($recipient);
+            }
+        }
+
+        // // 🔔 Tampilkan notifikasi ke pembuatnya juga
+        // Notification::make()
+        //     ->title('Surat izin berhasil disimpan')
+        //     ->success()
+        //     ->send();
     }
 
     protected function getRedirectUrl(): string

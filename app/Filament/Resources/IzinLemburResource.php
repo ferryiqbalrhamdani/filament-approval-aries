@@ -146,28 +146,6 @@ class IzinLemburResource extends Resource
 
                         return $indicators;
                     }),
-                Tables\Filters\Filter::make('Tahun')
-                    ->form([
-                        Forms\Components\Select::make('tanggal_lembur')
-                            ->label('Tahun')
-                            ->options([
-                                1 => 'Tahun Ini',
-                            ]),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        if (isset($data['tanggal_lembur']) && $data['tanggal_lembur'] === 1) {
-                            $query->whereYear('tanggal_lembur', Carbon::now()->year);
-                        }
-                        return $query;
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['tanggal_lembur']) {
-                            $indicators['tanggal_lembur'] = 'Tahun: ' . Carbon::now()->year;
-                        }
-
-                        return $indicators;
-                    }),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([

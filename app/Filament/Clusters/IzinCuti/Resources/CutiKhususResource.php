@@ -188,28 +188,6 @@ class CutiKhususResource extends Resource
 
                         return $indicators;
                     }),
-                Tables\Filters\Filter::make('Tahun')
-                    ->form([
-                        Forms\Components\Select::make('mulai_cuti')
-                            ->label('Tahun')
-                            ->options([
-                                1 => 'Tahun Ini',
-                            ]),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        if (isset($data['mulai_cuti']) && $data['mulai_cuti'] === 1) {
-                            $query->whereYear('mulai_cuti', Carbon::now()->year);
-                        }
-                        return $query;
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['mulai_cuti']) {
-                            $indicators['mulai_cuti'] = 'Tahun: ' . Carbon::now()->year;
-                        }
-
-                        return $indicators;
-                    }),
             ])
             ->recordAction(null)
             ->recordUrl(null)

@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
@@ -20,12 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:update-leave-balance')
             ->evenInMaintenanceMode()
-            ->dailyAt('01:00');
+            ->dailyAt('00:00');
         $schedule->command('app:update-izin')
             ->evenInMaintenanceMode()
             ->monthlyOn(25, '08:00');
             // Jalankan setiap hari jam 00:00
-        $schedule->command('cuti:update-tahunan')
-            ->evenInMaintenanceMode()
-            ->dailyAt('00:00');
+        // $schedule->command('cuti:update-tahunan')
+        //     ->evenInMaintenanceMode()
+        //     ->dailyAt('00:00');
     })->create();

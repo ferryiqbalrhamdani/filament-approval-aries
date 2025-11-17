@@ -5,7 +5,9 @@ namespace App\Filament\Clusters\IzinCuti\Resources\CutiPribadiResource\Pages;
 use Carbon\Carbon;
 use App\Models\User;
 use Filament\Actions;
+use Carbon\CarbonPeriod;
 use Filament\Actions\Action;
+use App\Models\PublicHoliday;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -19,20 +21,45 @@ class CreateCutiPribadi extends CreateRecord
     // Fungsi untuk menghitung lama cuti tanpa akhir pekan
     private function hitungLamaIzin($tanggalMulai, $tanggalSampai)
     {
-        $lamaIzin = 0;
-        $currentDate = Carbon::parse($tanggalMulai)->copy();
-        $sampaiTanggal = Carbon::parse($tanggalSampai);
+        $start = Carbon::parse($tanggalMulai)->startOfDay();
+        $end = Carbon::parse($tanggalSampai)->startOfDay();
 
-        // Menghitung jumlah hari cuti tanpa akhir pekan
-        while ($currentDate <= $sampaiTanggal) {
-            if ($currentDate->isWeekday()) {
-                $lamaIzin++;
+        if ($end->lt($start)) {
+            return 0;
+        }
+
+        // Ambil tanggal libur di rentang dan normalisasikan ke 'Y-m-d'
+        $publicHolidays = PublicHoliday::whereBetween('date', [
+            $start->toDateString(),
+            $end->toDateString(),
+        ])->pluck('date')
+        ->map(function ($d) {
+            return Carbon::parse($d)->toDateString();
+        })->toArray();
+
+        $period = CarbonPeriod::create($start, $end);
+
+        $lamaIzin = 0;
+
+        foreach ($period as $day) {
+            $dayStr = $day->toDateString();
+
+            // Lewatkan weekend
+            if ($day->isWeekend()) {
+                continue;
             }
-            $currentDate->addDay();
+
+            // Lewatkan hari libur nasional (pastikan format sama)
+            if (in_array($dayStr, $publicHolidays, true)) {
+                continue;
+            }
+
+            $lamaIzin++;
         }
 
         return $lamaIzin;
     }
+
 
 
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -143,6 +170,35 @@ class CreateCutiPribadi extends CreateRecord
             $cutiPribadiApprove->izinCutiApproveDua()->create([
                 'cuti_pribadi_approve_id' => $cutiPribadiApprove->id,
             ]);
+        }
+
+        // 🔔 Kirim notifikasi ke user_approve_id dan user_mengetahui_id jika ada
+        $recipients = [];
+
+        if (Auth::user()->user_approve_id) {
+            $recipients[] = User::find(Auth::user()->user_approve_id);
+        }
+
+        if (Auth::user()->user_mengetahui_id) {
+            $recipients[] = User::find(Auth::user()->user_mengetahui_id);
+        }
+
+        foreach ($recipients as $recipient) {
+            if ($recipient) {
+                Notification::make()
+                    ->title('Pengajuan Surat Izin Baru')
+                    ->body(
+                          sprintf(
+                                "%s %s telah membuat<br>%s<br>%s",
+                                Auth::user()->first_name,
+                                Auth::user()->last_name,
+                                '"izin cuti" baru',
+                                "yang memerlukan tindakan Anda."
+                            )
+                    )
+                    ->success()
+                    ->sendToDatabase($recipient);
+            }
         }
     }
 

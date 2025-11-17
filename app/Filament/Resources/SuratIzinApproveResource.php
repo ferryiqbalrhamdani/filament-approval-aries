@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -449,10 +450,21 @@ class SuratIzinApproveResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Anda telah dikembalikan')
+                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                    ->warning()
+                                    ->sendToDatabase($recipient);
+                            }
+
                             Notification::make()
                                 ->title('Data berhasil di kembalikan')
                                 ->success()
                                 ->send();
+
                         })
                         ->visible(fn($record) => $record->status > 0 && $record->where('user_id', Auth::id())),
                     Tables\Actions\Action::make('Approve')
@@ -464,16 +476,29 @@ class SuratIzinApproveResource extends Resource
                         ->requiresConfirmation()
                         ->icon('heroicon-s-check')
                         ->action(function (SuratIzinApprove $record, array $data): void {
+                            $userRecipient = User::find($record->suratIzin->user_id);
+
+                            // dd($userRecipient);
+
                             // dd($record->suratIzin->user->user_approve_dua_id, $record->suratIzin->suratIzinApproveDua);
                             $record->update([
                                 'status' => 1,
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            Notification::make()
+                                ->title('Surat Izin Anda telah disetujui')
+                                ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                ->success()
+                                ->sendToDatabase($recipient);
+
                             Notification::make()
                                 ->title('Data berhasil di Approve')
                                 ->success()
                                 ->send();
+
                         })
                         ->color('success')
                         ->hidden(fn($record) => $record->status > 0)
@@ -498,11 +523,21 @@ class SuratIzinApproveResource extends Resource
                                 'status' => 2,
                                 'keterangan' => $data['keterangan'],
                             ]);
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Anda telah ditolak')
+                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                                    ->danger()
+                                    ->sendToDatabase($recipient);
+                            }
 
                             Notification::make()
                                 ->title('Data berhasil di Reject')
                                 ->success()
                                 ->send();
+
                         })
                         ->color('danger')
                         ->hidden(fn($record) => $record->status > 0)
@@ -519,18 +554,28 @@ class SuratIzinApproveResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+
                             foreach ($records as $record) {
+                                // Update status dan data lainnya
                                 $record->update([
                                     'status' => 1,
                                     'keterangan' => null,
-                                    'user_id' => Auth::user()->id,
+                                    'user_id' => Auth::id(),
                                 ]);
+
+                                // Ambil user yang mengajukan surat izin
+                                 $recipient = User::find($record->suratIzin->user_id);
+
+                                Notification::make()
+                                    ->title('Surat Izin Anda telah disetujui')
+                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                    ->success()
+                                    ->sendToDatabase($recipient);
                             }
 
-
-
+                            // Notifikasi sukses untuk admin yang menjalankan aksi
                             Notification::make()
-                                ->title('Data yang dipilih berhasil di Approve')
+                                ->title('Data yang dipilih berhasil di-approve.')
                                 ->success()
                                 ->send();
                         })

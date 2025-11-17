@@ -16,6 +16,11 @@ class UserCuti extends Model
         'status',
     ];
 
+    protected $casts = [
+        'jatah_cuti' => 'integer',
+        'sisa_cuti' => 'integer',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

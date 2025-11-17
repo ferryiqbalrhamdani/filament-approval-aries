@@ -15,9 +15,9 @@ class SisaCuti extends BaseWidget
     {
         return [
             Stat::make('Sisa Cuti ' . Carbon::now()->year - 1,  Auth::user()->sisa_cuti_sebelumnya)
-                ->description('cuti kadaluarsa pada juni ' . Carbon::now()->year),
+                ->description('cuti kadaluarsa pada 1 juni ' . Carbon::now()->year),
             Stat::make('Sisa Cuti ' . Carbon::now()->year,  Auth::user()->sisa_cuti)
-                ->description('cuti kadaluarsa pada juni ' . Carbon::now()->year + 1),
+                ->description('cuti kadaluarsa pada 1 juni ' . Carbon::now()->year + 1),
         ];
     }
 }

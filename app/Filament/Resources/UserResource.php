@@ -21,6 +21,7 @@ use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\Widgets\UserOverview;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class UserResource extends Resource
 {
@@ -265,7 +266,7 @@ class UserResource extends Resource
 
             ])
             ->filters([
-                //
+                DateRangeFilter::make('created_at'),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
@@ -291,7 +292,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\CutisRelationManager::class,
+            // RelationManagers\CutisRelationManager::class,
         ];
     }
 

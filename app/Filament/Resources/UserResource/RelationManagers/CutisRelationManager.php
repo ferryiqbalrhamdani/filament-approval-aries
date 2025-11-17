@@ -50,14 +50,25 @@ class CutisRelationManager extends RelationManager
                 ->date(),
                 Tables\Columns\TextColumn::make('tanggal_hangus')
                 ->date(),
+                Tables\Columns\TextColumn::make('status')
+                ->label('Status Cuti')
+                ->badge()
+                ->color(function (string $state): string {
+                    return match ($state) {
+                        'tersedia' => 'success',
+                        'hangus' => 'danger',
+                        default => 'secondary',
+                    };
+                }),
                 Tables\Columns\TextColumn::make('jatah_cuti'),
                 Tables\Columns\TextColumn::make('sisa_cuti')
-                    ->numeric()
-                    ->summarize(
-                        Sum::make()
-                            ->label('Total Sisa Cuti')
-                        ),
+                ->numeric()
+                ->summarize(
+                    Sum::make()
+                    ->label('Total Sisa Cuti')
+                ),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

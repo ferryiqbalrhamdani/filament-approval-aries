@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class UpdateLeaveBalance extends Command
 {
@@ -27,36 +28,17 @@ class UpdateLeaveBalance extends Command
      */
     public function handle()
     {
-        $users = User::whereHas('roles', function ($query) {
-            $query->where('name', 'cuti_pribadi');
-        })->get();
-
         $today = Carbon::today();
+        $users = User::whereHas('roles', fn($q) => $q->where('name', 'cuti_pribadi'))->get();
 
-        foreach ($users as $user) {
-            // 1. Tambah 6 hari cuti pada awal tahun (1 Januari) dengan maksimum 12 hari
-            if ($today->isSameDay(Carbon::create($today->year, 1, 1))) {
-                $user->sisa_cuti_sebelumnya = $user->sisa_cuti;
-                $user->sisa_cuti = 6;
+        $service = new \App\Services\LeaveService();
+
+        DB::transaction(function () use ($users, $today, $service) {
+            foreach ($users as $user) {
+                $service->updateLeaveBalance($user, $today);
             }
+        });
 
-            // 2. Reset cuti pada tanggal 1 Juli, 7, 1
-            if ($today->isSameDay(Carbon::create($today->year, 7, 1))) {
-                $totalCuti = $user->sisa_cuti_sebelumnya + $user->sisa_cuti;
-
-                // Menghitung cuti berdasarkan penggunaan dari Januari hingga Juli
-                if ($totalCuti <= 6) {
-                    $user->sisa_cuti_sebelumnya = 0;
-                    $user->sisa_cuti = max($totalCuti, 0);
-                } else {
-                    $usedCuti = $totalCuti - $user->sisa_cuti; // Misalnya cuti yang sudah dipakai
-                    $user->sisa_cuti = max($totalCuti - $usedCuti, 0); // Update `sisa_cuti`
-                    $user->sisa_cuti_sebelumnya = 0;
-                }
-            }
-
-            // Simpan perubahan
-            $user->save();
-        }
+        $this->info('✅ Cuti berhasil di-update.');
     }
 }

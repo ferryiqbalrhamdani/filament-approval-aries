@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 
 class CutiPribadi extends Model
@@ -18,63 +19,68 @@ class CutiPribadi extends Model
         'is_draft',
     ];
 
-   protected static function boot()
-    {
-        parent::boot();
+//    protected static function boot()
+//     {
+//         parent::boot();
 
-        static::creating(function ($cuti) {
-            $jatahAktif = $cuti->user->cutis()
-                ->whereDate('tanggal_mulai', '<=', now())
-                ->whereDate('tanggal_hangus', '>', now())
-                ->orderBy('tahun', 'asc')
-                ->first();
+//         static::creating(function ($cuti) {
+//             $jatahAktif = $cuti->user->cutis()
+//                 ->whereDate('tanggal_mulai', '<=', now())
+//                 ->whereDate('tanggal_hangus', '>', now())
+//                 ->orderBy('tahun', 'asc')
+//                 ->first();
 
-            if (!$jatahAktif || $jatahAktif->sisa_cuti < $cuti->lama_cuti) {
-                throw new \Exception('Sisa cuti tidak mencukupi untuk membuat cuti pribadi ini.');
-            }
-        });
+//             if (!$jatahAktif || $jatahAktif->sisa_cuti < $cuti->lama_cuti) {
+//                 Notification::make()
+//                     ->title('Kesalahan')
+//                     ->danger()
+//                     ->body("Anda tidak memiliki cukup jatah cuti untuk mengajukan cuti pribadi ini.")
+//                     ->duration(15000)
+//                     ->send();
+//             }
+//         });
 
-        static::created(function ($cuti) {
-            $cuti->kurangiSisaCuti();
-        });
+//         static::created(function ($cuti) {
+//             $cuti->kurangiSisaCuti();
+//         });
 
-        static::deleted(function ($cuti) {
-            $cuti->kembalikanSisaCuti();
-        });
-    }
+//         static::deleted(function ($cuti) {
+//             $cuti->kembalikanSisaCuti();
+//         });
+//     }
 
 
-    public function kurangiSisaCuti()
-    {
-        $lama = $this->lama_cuti;
+    // public function kurangiSisaCuti()
+    // {
+    //     $lama = $this->lama_cuti;
 
-        // Cari jatah cuti aktif milik user (yang belum hangus & masih ada sisa)
-        $jatahAktif = $this->user->cutis()
-            ->whereDate('tanggal_mulai', '<=', now())
-            ->whereDate('tanggal_hangus', '>', now())
-            ->orderBy('tahun', 'asc')
-            ->first();
+    //     // Cari jatah cuti aktif milik user (yang belum hangus & masih ada sisa)
+    //     $jatahAktif = $this->user->cutis()
+    //         ->whereDate('tanggal_mulai', '<=', now())
+    //         ->whereDate('tanggal_hangus', '>', now())
+    //         ->orderBy('tahun', 'asc')
+    //         ->first();
 
-        if ($jatahAktif) {
-            $jatahAktif->decrement('sisa_cuti', $lama);
-        }
-    }
+    //     if ($jatahAktif) {
+    //         $jatahAktif->decrement('sisa_cuti', $lama);
+    //     }
+    // }
 
-    public function kembalikanSisaCuti()
-    {
-        $lama = $this->lama_cuti;
+    // public function kembalikanSisaCuti()
+    // {
+    //     $lama = $this->lama_cuti;
 
-        // Jika cuti dihapus, kembalikan sisa cutinya
-        $jatahAktif = $this->user->cutis()
-            ->whereDate('tanggal_mulai', '<=', now())
-            ->whereDate('tanggal_hangus', '>', now())
-            ->orderBy('tahun', 'asc')
-            ->first();
+    //     // Jika cuti dihapus, kembalikan sisa cutinya
+    //     $jatahAktif = $this->user->cutis()
+    //         ->whereDate('tanggal_mulai', '<=', now())
+    //         ->whereDate('tanggal_hangus', '>', now())
+    //         ->orderBy('tahun', 'asc')
+    //         ->first();
 
-        if ($jatahAktif) {
-            $jatahAktif->increment('sisa_cuti', $lama);
-        }
-    }
+    //     if ($jatahAktif) {
+    //         $jatahAktif->increment('sisa_cuti', $lama);
+    //     }
+    // }
 
 
     public function user()
