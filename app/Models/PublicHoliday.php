@@ -12,6 +12,7 @@ class PublicHoliday extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'string',
     ];
+
 }
