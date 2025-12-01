@@ -50,34 +50,38 @@
 
 
             {{-- Navigasi Bulan --}}
-            <div class="flex items-center justify-between gap-2">
-                <button wire:click="previousMonth"
-                    class="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+            <div class="flex flex-col items-center gap-3
+            sm:flex-row sm:items-center sm:justify-between">
+
+                <button wire:click="previousMonth" class="px-3 py-1 text-xs sm:text-sm rounded bg-gray-200 dark:bg-gray-700 
+               hover:bg-gray-300 dark:hover:bg-gray-500 transition">
                     ← Prev
                 </button>
 
-                <h2 class=" text-gray-900 dark:text-white">
-                    <p class="text-xl font-bold">
+                <h2 class="text-gray-900 dark:text-white text-center">
+                    <p class="text-base sm:text-xl font-bold">
                         {{ $this->currentDate->translatedFormat('F Y') }}
                     </p>
-                    {{-- Tombol Kembali ke Hari Ini --}}
-                    <div class="flex justify-center">
-                        <button wire:click="goToToday"
-                            class="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+
+                    <div class="flex justify-center mt-1">
+                        <button wire:click="goToToday" class="px-3 py-1 text-xs sm:text-sm rounded bg-gray-200 dark:bg-gray-700 
+                       hover:bg-gray-300 dark:hover:bg-gray-500 transition">
                             Hari Ini
                         </button>
                     </div>
                 </h2>
 
-                <button wire:click="nextMonth"
-                    class="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                <button wire:click="nextMonth" class="px-3 py-1 text-xs sm:text-sm rounded bg-gray-200 dark:bg-gray-700 
+               hover:bg-gray-300 dark:hover:bg-gray-500 transition">
                     Next →
                 </button>
             </div>
 
+
             <x-filament::section>
                 {{-- Hari --}}
-                <div class="grid grid-cols-7 text-center font-semibold">
+                <div
+                    class="grid grid-cols-7 text-center font-semibold text-[0.60rem] sm:text-xs md:text-sm lg:text-base">
                     @foreach(['Ming','Sen','Sel','Rab','Kam','Jum','Sab'] as $day)
                     <div>{{ $day }}</div>
                     @endforeach
