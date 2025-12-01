@@ -78,51 +78,50 @@
             </div>
 
 
-            <x-filament::section>
-                {{-- Hari --}}
-                <div class="grid grid-cols-7 text-center font-semibold leading-tight
+            {{-- Hari --}}
+            <div class="grid grid-cols-7 text-center font-semibold leading-tight
     text-[0.65rem] sm:text-xs md:text-sm lg:text-base">
 
-                    @php
-                    $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                    @endphp
-
-                    @foreach($days as $day)
-                    <div class="px-1 py-1 flex justify-center">
-
-                        {{-- Mobile: huruf pertama --}}
-                        <span class="block sm:hidden">
-                            {{ mb_substr($day, 0, 1) }}
-                        </span>
-
-                        {{-- Desktop: nama lengkap --}}
-                        <span class="hidden sm:block whitespace-nowrap">
-                            {{ $day }}
-                        </span>
-
-                    </div>
-                    @endforeach
-                </div>
-
-                {{-- Tanggal --}}
                 @php
-                $holidays = collect($this->getHolidays())->pluck('name', 'date')->toArray();
+                $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
                 @endphp
 
-                <div class="mt-6 filament-calendar 
+                @foreach($days as $day)
+                <div class="px-1 py-1 flex justify-center">
+
+                    {{-- Mobile: huruf pertama --}}
+                    <span class="block sm:hidden">
+                        {{ mb_substr($day, 0, 1) }}
+                    </span>
+
+                    {{-- Desktop: nama lengkap --}}
+                    <span class="hidden sm:block whitespace-nowrap">
+                        {{ $day }}
+                    </span>
+
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Tanggal --}}
+            @php
+            $holidays = collect($this->getHolidays())->pluck('name', 'date')->toArray();
+            @endphp
+
+            <div class="mt-6 filament-calendar 
                     grid grid-cols-7 gap-1 
                     sm:gap-2 
                     text-xs sm:text-sm md:text-base">
-                    @foreach($this->getMonthData() as $date)
-                    @php
-                    $dateString = $date->toDateString();
-                    $isToday = $date->isToday();
-                    $isCurrentMonth = $date->month === $this->currentDate->month;
-                    $isWeekend = ($date->dayOfWeek === 0 || $date->dayOfWeek === 6);
-                    $isHoliday = array_key_exists($dateString, $holidays);
-                    @endphp
+                @foreach($this->getMonthData() as $date)
+                @php
+                $dateString = $date->toDateString();
+                $isToday = $date->isToday();
+                $isCurrentMonth = $date->month === $this->currentDate->month;
+                $isWeekend = ($date->dayOfWeek === 0 || $date->dayOfWeek === 6);
+                $isHoliday = array_key_exists($dateString, $holidays);
+                @endphp
 
-                    <div class="day 
+                <div class="day 
                         h-10 sm:h-12 md:h-14
                         rounded cursor-pointer select-none font-medium
                         flex items-center justify-center flex-col
@@ -132,21 +131,20 @@
                         {{ $isWeekend ? 'weekend' : '' }}
                         {{ !$isCurrentMonth ? 'opacity-40' : '' }}
                         hover:bg-blue-100 dark:hover:bg-gray-600"
-                        title="{{ $isHoliday ? $holidays[$dateString] : '' }}">
-                        <span
-                            class="{{ !$isCurrentMonth ? 'text-[0.65rem] text-gray-400 dark:text-gray-500' : 'text-base' }}">
-                            {{ $date->day }}
-                        </span>
+                    title="{{ $isHoliday ? $holidays[$dateString] : '' }}">
+                    <span
+                        class="{{ !$isCurrentMonth ? 'text-[0.65rem] text-gray-400 dark:text-gray-500' : 'text-base' }}">
+                        {{ $date->day }}
+                    </span>
 
 
 
-                        <span class="dot {{ $isHoliday ? 'bg-red-600' : '' }}"
-                            style="{{ !$isHoliday ? 'visibility: hidden;' : '' }}">
-                        </span>
-                    </div>
-                    @endforeach
+                    <span class="dot {{ $isHoliday ? 'bg-red-600' : '' }}"
+                        style="{{ !$isHoliday ? 'visibility: hidden;' : '' }}">
+                    </span>
                 </div>
-            </x-filament::section>
+                @endforeach
+            </div>
 
             {{-- Daftar Hari Libur --}}
             @if(count($this->getHolidays()) > 0)
