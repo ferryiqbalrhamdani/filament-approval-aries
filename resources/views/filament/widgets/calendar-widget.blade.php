@@ -80,14 +80,29 @@
 
             <x-filament::section>
                 {{-- Hari --}}
-                <div
-                    class="grid grid-cols-7 text-center font-semibold text-[0.60rem] sm:text-xs md:text-sm lg:text-base">
-                    @foreach(['Ming','Sen','Sel','Rab','Kam','Jum','Sab'] as $day)
-                    <div>{{ $day }}</div>
+                <div class="grid grid-cols-7 text-center font-semibold leading-tight
+    text-[0.65rem] sm:text-xs md:text-sm lg:text-base">
+
+                    @php
+                    $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                    @endphp
+
+                    @foreach($days as $day)
+                    <div class="px-1 py-1 flex justify-center">
+
+                        {{-- Mobile: huruf pertama --}}
+                        <span class="block sm:hidden">
+                            {{ mb_substr($day, 0, 1) }}
+                        </span>
+
+                        {{-- Desktop: nama lengkap --}}
+                        <span class="hidden sm:block whitespace-nowrap">
+                            {{ $day }}
+                        </span>
+
+                    </div>
                     @endforeach
                 </div>
-
-
 
                 {{-- Tanggal --}}
                 @php
