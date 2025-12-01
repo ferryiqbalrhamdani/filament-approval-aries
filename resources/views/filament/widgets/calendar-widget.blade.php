@@ -114,7 +114,12 @@
                         {{ !$isCurrentMonth ? 'opacity-40' : '' }}
                         hover:bg-blue-100 dark:hover:bg-gray-600"
                         title="{{ $isHoliday ? $holidays[$dateString] : '' }}">
-                        <span>{{ $date->day }}</span>
+                        <span
+                            class="{{ !$isCurrentMonth ? 'text-[0.65rem] text-gray-400 dark:text-gray-500' : 'text-base' }}">
+                            {{ $date->day }}
+                        </span>
+
+
 
                         <span class="dot {{ $isHoliday ? 'bg-red-600' : '' }}"
                             style="{{ !$isHoliday ? 'visibility: hidden;' : '' }}">
