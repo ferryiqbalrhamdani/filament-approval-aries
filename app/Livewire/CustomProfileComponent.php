@@ -56,7 +56,7 @@ class CustomProfileComponent extends EditProfileForm
                             TextInput::make('last_name')
                                 ->label(__('filament-edit-profile::default.last_name'))
                                 // ->disabled()
-                                ->helperText('Kosongkan jika tidak memiliki nama belakang'),
+                                ->helperText('Kosongkan jika tidak memiliki nama tengah atau nama belakang'),
                         ])->columns(2),
                         TextInput::make('username')
                             ->label(__('filament-edit-profile::default.username'))
