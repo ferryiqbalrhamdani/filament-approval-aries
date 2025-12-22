@@ -370,7 +370,7 @@ class SuratIzinResource extends Resource
                     ->outlined()
                     ->deselectRecordsAfterCompletion(),
 
-                Tables\Actions\DeleteBulkAction::make('penajuan')
+                Tables\Actions\BulkAction::make('penajuan')
                     ->label('Simpan sebagai pengajuan')
                     ->action(
                         function (\Illuminate\Database\Eloquent\Collection $records): void {
