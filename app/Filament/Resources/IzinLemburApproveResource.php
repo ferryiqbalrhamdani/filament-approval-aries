@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -12,6 +13,7 @@ use Filament\Resources\Resource;
 use App\Models\IzinLemburApprove;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Infolists\Components\Group;
 use Filament\Notifications\Notification;
@@ -23,7 +25,6 @@ use Filament\Infolists\Components\ViewEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\IzinLemburApproveResource\Pages;
 use App\Filament\Resources\IzinLemburApproveResource\RelationManagers;
-use Filament\Forms\Components\Textarea;
 
 class IzinLemburApproveResource extends Resource
 {
@@ -190,6 +191,16 @@ class IzinLemburApproveResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->izinLembur->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Lembur Anda telah dikembalikan')
+                                    ->body('Surat izin lembur anda untuk telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                    ->warning()
+                                    ->sendToDatabase($recipient);
+                            }
+
                             Notification::make()
                                 ->title('Data berhasil di kembalikan')
                                 ->success()
@@ -210,6 +221,14 @@ class IzinLemburApproveResource extends Resource
                                 'status' => 1,
                                 'user_id' => Auth::user()->id,
                             ]);
+
+                            $recipient = User::find($record->izinLembur->user_id);
+
+                            Notification::make()
+                                ->title('Surat Izin Lembur Anda telah disetujui')
+                                ->body('Surat izin lembur anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                ->success()
+                                ->sendToDatabase($recipient);
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -238,6 +257,16 @@ class IzinLemburApproveResource extends Resource
                                 'status' => 2,
                                 'keterangan' => $data['keterangan'],
                             ]);
+
+                            $recipient = User::find($record->izinLembur->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Lembur Anda telah ditolak')
+                                    ->body('Surat izin lembur anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                                    ->danger()
+                                    ->sendToDatabase($recipient);
+                            }
 
                             Notification::make()
                                 ->title('Data berhasil di Reject')

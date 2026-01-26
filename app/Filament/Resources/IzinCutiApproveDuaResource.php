@@ -4,14 +4,17 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Models\IzinCutiApproveDua;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
@@ -31,8 +34,6 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\IzinCutiApproveDuaResource\Pages;
 use App\Filament\Resources\IzinCutiApproveDuaResource\RelationManagers;
 use App\Filament\Resources\IzinCutiApproveDuaResource\Widgets\IzinCutiApproveDuaOverview;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Forms\Components\Textarea;
 
 class IzinCutiApproveDuaResource extends Resource
 {
@@ -225,6 +226,14 @@ class IzinCutiApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->izinCutiApprove->user_cuti_id);
+
+                            Notification::make()
+                                ->title('Surat Izin Cuti Anda telah disetujui')
+                                ->body('Surat izin cuti anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                ->success()
+                                ->sendToDatabase($recipient);
+
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -288,6 +297,15 @@ class IzinCutiApproveDuaResource extends Resource
                                 ]);
                             }
 
+                            $recipient = User::find($record->izinCutiApprove->user_cuti_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Cuti Anda telah ditolak')
+                                    ->body('Surat izin cuti anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                                    ->danger()
+                                    ->sendToDatabase($recipient);
+                            }
 
 
                             Notification::make()

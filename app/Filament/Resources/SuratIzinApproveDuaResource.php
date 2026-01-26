@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -13,6 +14,7 @@ use Filament\Resources\Resource;
 use App\Models\SuratIzinApproveDua;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Infolists\Components\Group;
 use Filament\Notifications\Notification;
@@ -31,7 +33,6 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\SuratIzinApproveDuaResource\Pages;
 use App\Filament\Resources\SuratIzinApproveDuaResource\RelationManagers;
 use App\Filament\Resources\SuratIzinApproveDuaResource\Widgets\SuratIzinApproveDuaOverview;
-use Filament\Forms\Components\Textarea;
 
 class SuratIzinApproveDuaResource extends Resource
 {
@@ -210,6 +211,17 @@ class SuratIzinApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Anda telah dikembalikan')
+                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                    ->warning()
+                                    ->sendToDatabase($recipient);
+                            }
+
+
 
                             Notification::make()
                                 ->title('Data berhasil di kembalikan')
@@ -232,6 +244,13 @@ class SuratIzinApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            Notification::make()
+                                ->title('Surat Izin Anda telah disetujui')
+                                ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                                ->success()
+                                ->sendToDatabase($recipient);
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -261,6 +280,16 @@ class SuratIzinApproveDuaResource extends Resource
                                 'status' => 2,
                                 'keterangan' => $data['keterangan'],
                             ]);
+
+                            $recipient = User::find($record->suratIzin->user_id);
+
+                            if ($recipient) {
+                                Notification::make()
+                                    ->title('Surat Izin Anda telah ditolak')
+                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                                    ->danger()
+                                    ->sendToDatabase($recipient);
+                            }
 
 
                             Notification::make()

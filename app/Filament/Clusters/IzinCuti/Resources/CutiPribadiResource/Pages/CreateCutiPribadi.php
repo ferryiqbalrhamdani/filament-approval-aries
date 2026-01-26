@@ -19,117 +19,134 @@ class CreateCutiPribadi extends CreateRecord
     protected static string $resource = CutiPribadiResource::class;
 
     // Fungsi untuk menghitung lama cuti tanpa akhir pekan
-    private function hitungLamaIzin($tanggalMulai, $tanggalSampai)
+    /**
+     * Hitung lama cuti (tanpa weekend & hari libur)
+     */
+    private function hitungLamaIzin($mulai, $sampai): int
     {
-        $start = Carbon::parse($tanggalMulai)->startOfDay();
-        $end = Carbon::parse($tanggalSampai)->startOfDay();
+        $start = Carbon::parse($mulai)->startOfDay();
+        $end   = Carbon::parse($sampai)->startOfDay();
 
         if ($end->lt($start)) {
             return 0;
         }
 
-        // Ambil tanggal libur di rentang dan normalisasikan ke 'Y-m-d'
-        $publicHolidays = PublicHoliday::whereBetween('date', [
+        $holidays = PublicHoliday::whereBetween('date', [
             $start->toDateString(),
             $end->toDateString(),
         ])->pluck('date')
-        ->map(function ($d) {
-            return Carbon::parse($d)->toDateString();
-        })->toArray();
+          ->map(fn ($d) => Carbon::parse($d)->toDateString())
+          ->toArray();
 
         $period = CarbonPeriod::create($start, $end);
-
-        $lamaIzin = 0;
+        $lama   = 0;
 
         foreach ($period as $day) {
-            $dayStr = $day->toDateString();
-
-            // Lewatkan weekend
-            if ($day->isWeekend()) {
-                continue;
-            }
-
-            // Lewatkan hari libur nasional (pastikan format sama)
-            if (in_array($dayStr, $publicHolidays, true)) {
-                continue;
-            }
-
-            $lamaIzin++;
+            if ($day->isWeekend()) continue;
+            if (in_array($day->toDateString(), $holidays, true)) continue;
+            $lama++;
         }
 
-        return $lamaIzin;
+        return $lama;
     }
 
-
-
+    /**
+     * Mutasi & validasi sebelum create
+     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = Auth::user();
 
-        // Menyimpan data company_id dan user_id
         $data['company_id'] = $user->company_id;
-        $data['user_id'] = $user->id;
+        $data['user_id']    = $user->id;
 
-        // Memanggil fungsi hitungLamaIzin
-        $lamaIzin = $this->hitungLamaIzin($data['mulai_cuti'], $data['sampai_cuti']);
-        $totalCuti = $user->sisa_cuti + $user->sisa_cuti_sebelumnya;
+        $lamaIzin      = $this->hitungLamaIzin($data['mulai_cuti'], $data['sampai_cuti']);
+        $tahunMulai    = Carbon::parse($data['mulai_cuti'])->year;
+        $tahunSekarang = now()->year;
 
-        // Memeriksa apakah jumlah hari cuti melebihi cuti yang tersedia
-        if ($lamaIzin > $totalCuti) {
-            Notification::make()
-                ->title('Kesalahan')
-                ->danger()
-                ->body("Anda tidak memiliki cukup jatah cuti. Anda mengajukan $lamaIzin hari, namun hanya tersedia {$user->sisa_cuti} hari.")
-                ->duration(15000)
-                ->send();
+        $sisaSebelum = $user->sisa_cuti_sebelumnya;
+        $sisaSekarang = $user->sisa_cuti;
 
-            // Mencegah pengiriman form
-            throw ValidationException::withMessages([
-                'mulai_cuti' => 'Jatah cuti Anda tidak mencukupi untuk pengajuan ini.',
-            ]);
+        /**
+         * ===============================
+         * CUTI TAHUN SEBELUMNYA
+         * ===============================
+         */
+        if ($tahunMulai < $tahunSekarang) {
+
+            if ($sisaSebelum <= 0 || $lamaIzin > $sisaSebelum) {
+                Notification::make()
+                    ->title('Pengajuan Tidak Valid')
+                    ->danger()
+                    ->body(
+                        "Cuti tahun sebelumnya hanya bisa menggunakan sisa cuti tahun lalu.
+                        Sisa cuti tahun lalu Anda: {$sisaSebelum} hari."
+                    )
+                    ->send();
+
+                throw ValidationException::withMessages([
+                    'mulai_cuti' => 'Sisa cuti tahun lalu tidak mencukupi.',
+                ]);
+            }
+
+            // potong hanya dari sisa_cuti_sebelumnya
+            $sisaSebelum -= $lamaIzin;
+
+            $data['temp_cuti_sebelumnya'] = $lamaIzin;
+            $data['temp_cuti'] = 0;
         }
 
-        $sisa_cuti_sebelumnya = $user->sisa_cuti_sebelumnya;
-        $sisa_cuti = $user->sisa_cuti;
+        /**
+         * ===============================
+         * CUTI TAHUN SEKARANG / DEPAN
+         * ===============================
+         */
+        else {
 
+            $totalCuti = $sisaSebelum + $sisaSekarang;
 
-        // Step 1: Check if $lamaIzin can be fully covered by $sisa_cuti_sebelumnya
-        if ($sisa_cuti_sebelumnya >= $lamaIzin) {
-            // Deduct entirely from $sisa_cuti_sebelumnya
-            $sisa_cuti_sebelumnya -= $lamaIzin;
-        } else {
-            // Step 2: Deduct whatever is available from $sisa_cuti_sebelumnya
-            $remainingLeave = $lamaIzin - $sisa_cuti_sebelumnya;
-            $sisa_cuti_sebelumnya = 0;
+            if ($lamaIzin > $totalCuti) {
+                Notification::make()
+                    ->title('Kesalahan')
+                    ->danger()
+                    ->body(
+                        "Anda mengajukan {$lamaIzin} hari,
+                        namun total sisa cuti Anda hanya {$totalCuti} hari."
+                    )
+                    ->send();
 
-            // Step 3: Deduct the remaining needed leave days from $sisa_cuti
-            $sisa_cuti -= $remainingLeave;
+                throw ValidationException::withMessages([
+                    'mulai_cuti' => 'Jatah cuti Anda tidak mencukupi.',
+                ]);
+            }
+
+            if ($sisaSebelum >= $lamaIzin) {
+                $sisaSebelum -= $lamaIzin;
+                $data['temp_cuti_sebelumnya'] = $lamaIzin;
+                $data['temp_cuti'] = 0;
+            } else {
+                $pakaiSisaSebelum = $sisaSebelum;
+                $sisa = $lamaIzin - $sisaSebelum;
+
+                $sisaSebelum = 0;
+                $sisaSekarang -= $sisa;
+
+                $data['temp_cuti_sebelumnya'] = $pakaiSisaSebelum;
+                $data['temp_cuti'] = $sisa;
+            }
         }
 
-        $data['temp_cuti_sebelumnya'] = $user->sisa_cuti_sebelumnya - $sisa_cuti_sebelumnya;
-        $data['temp_cuti'] = $user->sisa_cuti - $sisa_cuti;
-
-
-
-        // dd([
-        //     'lama izin: ' => $lamaIzin,
-        //     'sisa cuti: ' => $sisa_cuti,
-        //     'sisa cuti sebelumnya: ' => $sisa_cuti_sebelumnya,
-        //     'data' => $data
-        // ]);
-
-
-
-        // Mengupdate sisa cuti user
+        // update user (1x, aman)
         User::where('id', $user->id)->update([
-            'sisa_cuti_sebelumnya' => $sisa_cuti_sebelumnya,
-            'sisa_cuti' => $sisa_cuti,
+            'sisa_cuti_sebelumnya' => $sisaSebelum,
+            'sisa_cuti' => $sisaSekarang,
         ]);
 
-        $data['lama_cuti'] = $lamaIzin . " Hari";
+        $data['lama_cuti'] = $lamaIzin . ' Hari';
 
         return $data;
     }
+
 
     protected function afterCreate(): void
     {
