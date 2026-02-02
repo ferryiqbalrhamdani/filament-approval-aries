@@ -33,7 +33,7 @@ class CustomLogin extends Login
 
     protected function getLoginFormComponent(): Component
     {
-        return TextInput::make('login')
+        return TextInput::make('username')
             ->label(__('Username'))
             ->placeholder('Masukkan username anda')
             ->required()
@@ -42,11 +42,11 @@ class CustomLogin extends Login
             ->extraInputAttributes(['tabindex' => 1]);
     }
 
-    protected function getPasswordFormComponent(): Component
+   protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
             ->label(__('filament-panels::pages/auth/login.form.password.label'))
-            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()"> {{ __(\'filament-panels::pages/auth/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
+            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()" tabindex="3"> {{ __(\'filament-panels::pages/auth/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
             ->password()
             ->placeholder('Masukkan password anda')
             ->revealable(filament()->arePasswordsRevealable())
@@ -55,13 +55,20 @@ class CustomLogin extends Login
             ->extraInputAttributes(['tabindex' => 2]);
     }
 
-    protected function getCredentialsFromFormData(array $data): array
+    // protected function getCredentialsFromFormData(array $data): array
+    // {
+    //     // jika ingin login menggunakan email / username
+    //     // $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    //     $login_type = 'username';
+    //     return [
+    //         $login_type => $data['username'],
+    //         'password' => $data['password'],
+    //     ];
+    // }
+     protected function getCredentialsFromFormData(array $data): array
     {
-        // jika ingin login menggunakan email / username
-        // $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $login_type = 'username';
         return [
-            $login_type => $data['login'],
+            'username' => $data['username'],
             'password' => $data['password'],
         ];
     }
