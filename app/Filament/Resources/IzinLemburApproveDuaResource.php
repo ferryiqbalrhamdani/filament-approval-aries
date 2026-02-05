@@ -300,15 +300,15 @@ class IzinLemburApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
-                            $recipient = User::find($record->izinLembur->user_id);
+                            // $recipient = User::find($record->izinLembur->user_id);
 
-                            if ($recipient) {
-                                Notification::make()
-                                    ->title('Surat Izin Lembur Anda telah dikembalikan')
-                                    ->body('Surat izin lembur anda untuk telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
-                                    ->warning()
-                                    ->sendToDatabase($recipient);
-                            }
+                            // if ($recipient) {
+                            //     Notification::make()
+                            //         ->title('Surat Izin Lembur Anda telah dikembalikan')
+                            //         ->body('Surat izin lembur anda untuk telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                            //         ->warning()
+                            //         ->sendToDatabase($recipient);
+                            // }
 
 
                             Notification::make()
@@ -346,13 +346,13 @@ class IzinLemburApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
-                            $recipient = User::find($record->izinLembur->user_id);
+                            // $recipient = User::find($record->izinLembur->user_id);
 
-                            Notification::make()
-                                ->title('Surat Izin Lembur Anda telah disetujui')
-                                ->body('Surat izin lembur anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
-                                ->success()
-                                ->sendToDatabase($recipient);
+                            // Notification::make()
+                            //     ->title('Surat Izin Lembur Anda telah disetujui')
+                            //     ->body('Surat izin lembur anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                            //     ->success()
+                            //     ->sendToDatabase($recipient);
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -382,15 +382,15 @@ class IzinLemburApproveDuaResource extends Resource
                                 'keterangan' => $data['keterangan'],
                             ]);
 
-                            $recipient = User::find($record->izinLembur->user_id);
+                            // $recipient = User::find($record->izinLembur->user_id);
 
-                            if ($recipient) {
-                                Notification::make()
-                                    ->title('Surat Izin Lembur Anda telah ditolak')
-                                    ->body('Surat izin lembur anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
-                                    ->danger()
-                                    ->sendToDatabase($recipient);
-                            }
+                            // if ($recipient) {
+                            //     Notification::make()
+                            //         ->title('Surat Izin Lembur Anda telah ditolak')
+                            //         ->body('Surat izin lembur anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                            //         ->danger()
+                            //         ->sendToDatabase($recipient);
+                            // }
                             
                             Notification::make()
                                 ->title('Data berhasil di Reject')

@@ -211,15 +211,15 @@ class SuratIzinApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
-                            $recipient = User::find($record->suratIzin->user_id);
+                            // $recipient = User::find($record->suratIzin->user_id);
 
-                            if ($recipient) {
-                                Notification::make()
-                                    ->title('Surat Izin Anda telah dikembalikan')
-                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
-                                    ->warning()
-                                    ->sendToDatabase($recipient);
-                            }
+                            // if ($recipient) {
+                            //     Notification::make()
+                            //         ->title('Surat Izin Anda telah dikembalikan')
+                            //         ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah dikembalikan oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                            //         ->warning()
+                            //         ->sendToDatabase($recipient);
+                            // }
 
 
 
@@ -244,13 +244,13 @@ class SuratIzinApproveDuaResource extends Resource
                                 'user_id' => Auth::user()->id,
                             ]);
 
-                            $recipient = User::find($record->suratIzin->user_id);
+                            // $recipient = User::find($record->suratIzin->user_id);
 
-                            Notification::make()
-                                ->title('Surat Izin Anda telah disetujui')
-                                ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
-                                ->success()
-                                ->sendToDatabase($recipient);
+                            // Notification::make()
+                            //     ->title('Surat Izin Anda telah disetujui')
+                            //     ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                            //     ->success()
+                            //     ->sendToDatabase($recipient);
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -281,15 +281,15 @@ class SuratIzinApproveDuaResource extends Resource
                                 'keterangan' => $data['keterangan'],
                             ]);
 
-                            $recipient = User::find($record->suratIzin->user_id);
+                            // $recipient = User::find($record->suratIzin->user_id);
 
-                            if ($recipient) {
-                                Notification::make()
-                                    ->title('Surat Izin Anda telah ditolak')
-                                    ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
-                                    ->danger()
-                                    ->sendToDatabase($recipient);
-                            }
+                            // if ($recipient) {
+                            //     Notification::make()
+                            //         ->title('Surat Izin Anda telah ditolak')
+                            //         ->body('Surat izin Anda untuk "' . $record->suratIzin->keperluan_izin . '" telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                            //         ->danger()
+                            //         ->sendToDatabase($recipient);
+                            // }
 
 
                             Notification::make()

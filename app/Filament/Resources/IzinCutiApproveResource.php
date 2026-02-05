@@ -214,13 +214,13 @@ class IzinCutiApproveResource extends Resource
                                 'status' => 1,
                             ]);
 
-                             $recipient = User::find($record->user_cuti_id);
+                            //  $recipient = User::find($record->user_cuti_id);
 
-                            Notification::make()
-                                ->title('Surat Izin Cuti Anda telah disetujui')
-                                ->body('Surat izin cuti anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
-                                ->success()
-                                ->sendToDatabase($recipient);
+                            // Notification::make()
+                            //     ->title('Surat Izin Cuti Anda telah disetujui')
+                            //     ->body('Surat izin cuti anda untuk  telah disetujui oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . '.')
+                            //     ->success()
+                            //     ->sendToDatabase($recipient);
 
                             Notification::make()
                                 ->title('Data berhasil di Approve')
@@ -250,15 +250,15 @@ class IzinCutiApproveResource extends Resource
                                 'keterangan' => $data['keterangan'],
                             ]);
 
-                            $recipient = User::find($record->user_cuti_id);
+                            // $recipient = User::find($record->user_cuti_id);
 
-                            if ($recipient) {
-                                Notification::make()
-                                    ->title('Surat Izin Cuti Anda telah ditolak')
-                                    ->body('Surat izin cuti anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
-                                    ->danger()
-                                    ->sendToDatabase($recipient);
-                            }
+                            // if ($recipient) {
+                            //     Notification::make()
+                            //         ->title('Surat Izin Cuti Anda telah ditolak')
+                            //         ->body('Surat izin cuti anda untuk  telah ditolak oleh ' . Auth::user()->first_name . ' ' . Auth::user()->last_name . ' dengan alasan: "' . $data['keterangan'] . '".')
+                            //         ->danger()
+                            //         ->sendToDatabase($recipient);
+                            // }
 
                             Notification::make()
                                 ->title('Data berhasil di Reject')

@@ -57,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 // Widgets\FilamentInfoWidget::class,
                 // OverlookWidget::class,
             ])
-            ->databaseNotifications()
+            // ->databaseNotifications()
             ->font('Poppins')
             ->spa()
             ->middleware([

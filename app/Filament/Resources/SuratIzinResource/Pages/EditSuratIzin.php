@@ -104,29 +104,29 @@ class EditSuratIzin extends EditRecord
         }
 
         // 🔔 Kirim notifikasi ke user_approve_id dan user_mengetahui_id jika ada
-        $recipients = [];
+        // $recipients = [];
 
-        if (Auth::user()->user_approve_id) {
-            $recipients[] = User::find(Auth::user()->user_approve_id);
-        }
+        // if (Auth::user()->user_approve_id) {
+        //     $recipients[] = User::find(Auth::user()->user_approve_id);
+        // }
 
-        if (Auth::user()->user_mengetahui_id) {
-            $recipients[] = User::find(Auth::user()->user_mengetahui_id);
-        }
+        // if (Auth::user()->user_mengetahui_id) {
+        //     $recipients[] = User::find(Auth::user()->user_mengetahui_id);
+        // }
 
-        $recipients[] = User::whereHas('roles', function ($q) {
-            $q->where('name', 'approve_dua');
-        })->first();
+        // $recipients[] = User::whereHas('roles', function ($q) {
+        //     $q->where('name', 'approve_dua');
+        // })->first();
 
-        foreach ($recipients as $recipient) {
-            if ($recipient) {
-                Notification::make()
-                    ->title('Pengajuan Surat Izin di Ubah')
-                    ->body(Auth::user()->first_name .' '.Auth::user()->last_name. ' telah mengubah surat izin.')
-                    ->success()
-                    ->sendToDatabase($recipient);
-            }
-        }
+        // foreach ($recipients as $recipient) {
+        //     if ($recipient) {
+        //         Notification::make()
+        //             ->title('Pengajuan Surat Izin di Ubah')
+        //             ->body(Auth::user()->first_name .' '.Auth::user()->last_name. ' telah mengubah surat izin.')
+        //             ->success()
+        //             ->sendToDatabase($recipient);
+        //     }
+        // }
     }
 
     protected function getHeaderActions(): array
