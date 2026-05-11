@@ -14,10 +14,10 @@ class SisaCuti extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Sisa Cuti ' . Carbon::now()->year - 1,  Auth::user()->sisa_cuti_sebelumnya)
-                ->description('cuti kadaluarsa pada 1 juni ' . Carbon::now()->year),
-            Stat::make('Sisa Cuti ' . Carbon::now()->year,  Auth::user()->sisa_cuti)
-                ->description('cuti kadaluarsa pada 1 juni ' . Carbon::now()->year + 1),
+            Stat::make('Sisa Cuti ' . Carbon::now()->year - 1, Auth::user()->sisa_cuti_sebelumnya)
+                ->description('cuti kadaluarsa pada 1 juli ' . Carbon::now()->year),
+            Stat::make('Sisa Cuti ' . Carbon::now()->year, Auth::user()->sisa_cuti)
+                ->description('cuti kadaluarsa pada 1 juli ' . Carbon::now()->year + 1),
         ];
     }
 }

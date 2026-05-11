@@ -14,7 +14,7 @@ class LeaveService
             $user->sisa_cuti = 6;
         }
 
-        if ($today->isSameDay(Carbon::create($today->year, 6, 1))) {
+        if ($today->isSameDay(Carbon::create($today->year, 7, 1))) {
             $totalCuti = $user->sisa_cuti_sebelumnya + $user->sisa_cuti;
             $user->sisa_cuti = min(12, $totalCuti);
             $user->sisa_cuti_sebelumnya = 0;
