@@ -71,9 +71,7 @@ class CreateSuratIzin extends CreateRecord
         $currentDate = $tanggalIzin->copy();
 
         while ($currentDate <= $sampaiTanggal) {
-            if ($currentDate->isWeekday()) {
-                $lamaIzin++;
-            }
+            $lamaIzin++;
             $currentDate->addDay();
         }
 

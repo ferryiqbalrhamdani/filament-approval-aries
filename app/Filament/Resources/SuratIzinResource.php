@@ -87,53 +87,13 @@ class SuratIzinResource extends Resource
                                                 'Izin Meninggalkan Kantor',
                                                 'Tugas Meninggalkan Kantor',
                                             ]))
-                                            ->reactive()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                // Pengecekan apakah tanggal jatuh pada weekend (Sabtu atau Minggu)
-                                                $tanggalIzin = Carbon::parse($state);
-                                                if ($tanggalIzin->isWeekend()) {
-                                                    Notification::make()
-                                                        ->title('Perhatian')
-                                                        ->body('Tidak boleh memulai izin di hari weekend. Silahkan pilih tanggal yang lain.')
-                                                        ->warning()
-                                                        ->duration(10000)
-                                                        ->send();
-                                                }
-                                            })
-                                            ->rules([
-                                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
-                                                    $tanggalIzin = Carbon::parse($value);
-                                                    if ($tanggalIzin->isWeekend()) {
-                                                        $fail('Tidak boleh memulai izin di hari weekend. Silahkan pilih tanggal yang lain.');
-                                                    }
-                                                },
-                                            ]),
+                                            ->reactive(),
                                         Forms\Components\DatePicker::make('sampai_tanggal')
                                             ->required()
                                             ->afterOrEqual('tanggal_izin')
                                             ->hidden(fn(Get $get) => $get('keperluan_izin') === 'Izin Datang Terlambat')
                                             ->visible(fn(Get $get) => $get('keperluan_izin') === 'Izin Tidak Masuk Kerja'  || $get('status_izin') === 'lebih_dari_sehari')
-                                            ->reactive()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                // Pengecekan apakah tanggal jatuh pada weekend (Sabtu atau Minggu)
-                                                $tanggalIzin = Carbon::parse($state);
-                                                if ($tanggalIzin->isWeekend()) {
-                                                    Notification::make()
-                                                        ->title('Perhatian')
-                                                        ->body('Tidak boleh akhir izin di hari weekend. Silahkan pilih tanggal yang lain.')
-                                                        ->warning()
-                                                        ->duration(10000)
-                                                        ->send();
-                                                }
-                                            })
-                                            ->rules([
-                                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
-                                                    $tanggalIzin = Carbon::parse($value);
-                                                    if ($tanggalIzin->isWeekend()) {
-                                                        $fail('Tidak boleh akhir izin di hari weekend. Silahkan pilih tanggal yang lain.');
-                                                    }
-                                                },
-                                            ]),
+                                            ->reactive(),
                                     ])->columns(2),
                             ])
                             ->visible(fn(Get $get) => in_array($get('keperluan_izin'), [
