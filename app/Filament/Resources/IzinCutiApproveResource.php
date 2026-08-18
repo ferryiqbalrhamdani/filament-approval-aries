@@ -54,6 +54,7 @@ class IzinCutiApproveResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('userCuti.full_name')
                     ->label('Nama User')
+                    ->searchable(['first_name', 'last_name'])
                     ->sortable(['first_name', 'last_name']),
                 Tables\Columns\TextColumn::make('keterangan_cuti')
                     ->badge()
