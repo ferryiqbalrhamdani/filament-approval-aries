@@ -224,16 +224,8 @@ class CutiPribadiResource extends Resource
                         )),
                      Tables\Actions\DeleteAction::make()
                         ->action(function ($record) {
-                            $tempCuti = $record->tempCuti()->first();
-                            $userCuti = $record->user()->first();
-
-                            $sisaCuti = $userCuti->sisa_cuti + $tempCuti->sisa_cuti;
-                            $sisaCutiSebelumnya = $userCuti->sisa_cuti_sebelumnya + $tempCuti->sisa_cuti_sebelumnya;
-
-                            $userCuti->update([
-                                'sisa_cuti' => $sisaCuti,
-                                'sisa_cuti_sebelumnya' => $sisaCutiSebelumnya,
-                            ]);
+                            // Refund hanya sekali (aman jika sudah pernah di-reject)
+                            app(\App\Services\LeaveService::class)->refund($record);
                         })
                         ->after(function ($record) {
                             $record->delete();
@@ -261,16 +253,7 @@ class CutiPribadiResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                     ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                         foreach ($records as $record) {
-                            $tempCuti = $record->tempCuti()->first();
-                            $userCuti = $record->user()->first();
-
-                            $sisaCuti = $userCuti->sisa_cuti + $tempCuti->sisa_cuti;
-                            $sisaCutiSebelumnya = $userCuti->sisa_cuti_sebelumnya + $tempCuti->sisa_cuti_sebelumnya;
-
-                            $userCuti->update([
-                                'sisa_cuti' => $sisaCuti,
-                                'sisa_cuti_sebelumnya' => $sisaCutiSebelumnya,
-                            ]);
+                            app(\App\Services\LeaveService::class)->refund($record);
 
                             // 🔥 Ini penting: hapus record setelah update
                             $record->delete();

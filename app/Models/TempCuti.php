@@ -12,6 +12,7 @@ class TempCuti extends Model
         'cuti_pribadi_id',
         'sisa_cuti',
         'sisa_cuti_sebelumnya',
+        'dikembalikan_at',
     ];
 
     public function cutiPribadi()

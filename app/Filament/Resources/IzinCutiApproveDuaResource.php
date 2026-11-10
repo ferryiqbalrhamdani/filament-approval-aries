@@ -284,17 +284,7 @@ class IzinCutiApproveDuaResource extends Resource
                             // Calculate leave and check if it exceeds 6 days
                             if ($izinCuti->cuti_pribadi_id != null) {
                                 $data = $izinCuti->cutiPribadi;
-                                $tempCuti = $data->tempCuti()->first();
-                                $userCuti = $data->user()->first();
-
-                                $sisaCuti = $userCuti->sisa_cuti + $tempCuti->sisa_cuti;
-                                $sisaCutiSebelumnya = $userCuti->sisa_cuti_sebelumnya + $tempCuti->sisa_cuti_sebelumnya;
-
-
-                                $userCuti->update([
-                                    'sisa_cuti' => $sisaCuti,
-                                    'sisa_cuti_sebelumnya' => $sisaCutiSebelumnya,
-                                ]);
+                                app(\App\Services\LeaveService::class)->refund($data);
                             }
 
                             // $recipient = User::find($record->izinCutiApprove->user_cuti_id);

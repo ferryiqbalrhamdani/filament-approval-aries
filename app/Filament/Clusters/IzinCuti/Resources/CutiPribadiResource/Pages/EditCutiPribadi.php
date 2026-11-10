@@ -101,16 +101,7 @@ class EditCutiPribadi extends EditRecord
             $sisa_cuti -= $remainingLeave;
         }
 
-        $temp_cuti = 2 -  $sisa_cuti;
-        $temp_cuti_sebelumnya = 3 - $sisa_cuti_sebelumnya;
-
-        dd([
-            'cuti 2023: ' => $sisa_cuti_sebelumnya,
-            'cuti 2024: ' => $sisa_cuti,
-            'temp cuti 2023: ' => $temp_cuti_sebelumnya,
-            'temp cuti 2024: ' => $temp_cuti,
-            'lama izin: ' => $lamaIzin,
-        ]);
+        // (debug dd() dihapus; penyesuaian saldo saat edit belum diimplementasikan)
 
 
 

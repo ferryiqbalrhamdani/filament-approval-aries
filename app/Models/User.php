@@ -39,6 +39,8 @@ class User extends Authenticatable implements HasAvatar, HasName
         'user_approve_id',
         'user_mengetahui_id',
         'sisa_cuti_sebelumnya',
+        'cuti_terbit_tahun',
+        'cuti_hangus_tahun',
         'remember_token',
         'email',
         'email_verified_at',

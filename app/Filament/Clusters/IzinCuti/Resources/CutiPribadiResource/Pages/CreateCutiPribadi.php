@@ -64,8 +64,14 @@ class CreateCutiPribadi extends CreateRecord
         $tahunMulai    = Carbon::parse($data['mulai_cuti'])->year;
         $tahunSekarang = now()->year;
 
-        $sisaSebelum = $user->sisa_cuti_sebelumnya;
-        $sisaSekarang = $user->sisa_cuti;
+        $sisaSebelum = (int) $user->sisa_cuti_sebelumnya;
+        $sisaSekarang = (int) $user->sisa_cuti;
+
+        // Saldo tahun lalu hangus 1 Juli: hanya bisa dipakai untuk cuti yang dimulai sebelum 1 Juli tahun ini
+        $mulai = Carbon::parse($data['mulai_cuti'])->startOfDay();
+        if ($tahunMulai >= $tahunSekarang && $mulai->gte(Carbon::create($tahunSekarang, 7, 1)->startOfDay())) {
+            $sisaSebelum = 0;
+        }
 
         /**
          * ===============================
@@ -88,9 +94,6 @@ class CreateCutiPribadi extends CreateRecord
                     'mulai_cuti' => 'Sisa cuti tahun lalu tidak mencukupi.',
                 ]);
             }
-
-            // potong hanya dari sisa_cuti_sebelumnya
-            $sisaSebelum -= $lamaIzin;
 
             $data['temp_cuti_sebelumnya'] = $lamaIzin;
             $data['temp_cuti'] = 0;
@@ -120,27 +123,15 @@ class CreateCutiPribadi extends CreateRecord
                 ]);
             }
 
-            if ($sisaSebelum >= $lamaIzin) {
-                $sisaSebelum -= $lamaIzin;
-                $data['temp_cuti_sebelumnya'] = $lamaIzin;
-                $data['temp_cuti'] = 0;
-            } else {
-                $pakaiSisaSebelum = $sisaSebelum;
-                $sisa = $lamaIzin - $sisaSebelum;
+            // Pakai sisa tahun lalu dulu, sisanya dari jatah tahun ini
+            $pakaiSebelum = min($sisaSebelum, $lamaIzin);
 
-                $sisaSebelum = 0;
-                $sisaSekarang -= $sisa;
-
-                $data['temp_cuti_sebelumnya'] = $pakaiSisaSebelum;
-                $data['temp_cuti'] = $sisa;
-            }
+            $data['temp_cuti_sebelumnya'] = $pakaiSebelum;
+            $data['temp_cuti'] = $lamaIzin - $pakaiSebelum;
         }
 
-        // update user (1x, aman)
-        User::where('id', $user->id)->update([
-            'sisa_cuti_sebelumnya' => $sisaSebelum,
-            'sisa_cuti' => $sisaSekarang,
-        ]);
+        // CATATAN: fungsi ini hanya MENGHITUNG (tidak mengubah saldo user),
+        // sehingga aman dipanggil berulang. Saldo dipotong 1x di afterCreate().
 
         $data['lama_cuti'] = $lamaIzin . ' Hari';
 
@@ -153,6 +144,13 @@ class CreateCutiPribadi extends CreateRecord
         $cutiPribadi = $this->record;
 
         $recordData = $this->mutateFormDataBeforeCreate($this->data);
+
+        // Potong saldo user tepat 1x
+        $user = Auth::user();
+        User::where('id', $user->id)->update([
+            'sisa_cuti_sebelumnya' => max(0, (int) $user->sisa_cuti_sebelumnya - (int) $recordData['temp_cuti_sebelumnya']),
+            'sisa_cuti' => max(0, (int) $user->sisa_cuti - (int) $recordData['temp_cuti']),
+        ]);
 
         $cutiPribadi->tempCuti()->create([
             'cuti_pribadi_id' => $cutiPribadi->id,
